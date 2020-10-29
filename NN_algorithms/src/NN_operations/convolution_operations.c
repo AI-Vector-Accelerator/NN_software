@@ -190,11 +190,6 @@ void getOutputDimensionsConv2D(
 	const uint32_t stride,
 	uint32_t *outputDataHeight,uint32_t *outputDataWidth){
 
-	if (stride >1){
-		*outputDataHeight=(height-kernel_height )/stride+(height-kernel_height)%stride;
-		*outputDataWidth=(width-kernel_width )/stride+(width-kernel_width)%stride;
-	}else{
-		*outputDataHeight=(height-kernel_height +1);
-		*outputDataWidth=(width-kernel_width +1);
-	}
+	*outputDataHeight=(height-kernel_height )/stride+1;
+	*outputDataWidth=(width-kernel_width )/stride+1;
 }

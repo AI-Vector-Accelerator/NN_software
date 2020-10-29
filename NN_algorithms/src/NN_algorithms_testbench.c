@@ -77,7 +77,7 @@ void testbench_conv2D_multiIOChannel(){
 }
 
 void testbench_conv2D(){
-	const uint32_t height=7,width=7, kernel_height=4, kernel_width=4, stride=2;
+	const uint32_t height=9,width=9, kernel_height=3, kernel_width=3, stride=3;
 	uint32_t outputDataHeight, outputDataWidth;
 	getOutputDimensionsConv2D(kernel_height,kernel_width, height, width, stride, &outputDataHeight, &outputDataWidth);
 	int8_t data[height][width];
@@ -92,6 +92,7 @@ void testbench_conv2D(){
 	printMatrix2D(height,width,data);
 	printf("\n\nkernel:\n");
 	printMatrix2D(kernel_height,kernel_width,kernel);
+	printf("Stride = %d\n",stride);
 
 	conv2D(height,width,kernel_height,kernel_width,stride,outputDataHeight, outputDataWidth,data,kernel,output);
 
