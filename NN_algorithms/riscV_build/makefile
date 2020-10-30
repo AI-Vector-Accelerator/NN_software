@@ -1,8 +1,8 @@
 RV_COMPILER_OPTIONS = -Os -g -static -mabi=ilp32 -march=rv32imc -Wall -pedantic 
 RV_LINKING_OPTIONS = ${RV_COMPILER_OPTIONS} -nostartfiles
 
-LINKER_SCRIPT = ../lib/link.ld
-LIB_DIR = ../lib/
+LINKER_SCRIPT =  ../lib/link.ld
+LIB_DIR =  ../lib/
 
 TC_PREFIX = riscv32-unknown-elf-
 
@@ -25,7 +25,8 @@ NN_algorithms_testbench-riscv.hex: NN_algorithms_testbench-riscv.elf
 
 NN_algorithms_testbench-riscv.elf: $(OBJECTS) 
 	${CC} ${RV_LINKING_OPTIONS} -o NN_algorithms_testbench-riscv.elf   \
-		-L ${LIB_DIR} -lcv-verif -T ${LINKER_SCRIPT} $(OBJECTS)
+		 -L ${LIB_DIR} -lcv-verif -T ${LINKER_SCRIPT} $(OBJECTS)
+	
 		
 %.o : %.c
 	${CC} ${RV_COMPILER_OPTIONS}   -c -o $@ $< 
@@ -48,6 +49,7 @@ dir:
 all:
 	make dir
 	make
+	make analyze_assembly
 	make run
 
 .PHONY : run
@@ -56,7 +58,9 @@ run:
 
 .PHONY : clean
 clean:
-	rm -f NN_algorithms_testbench-riscv.hex NN_algorithms_testbench-riscv.elf $(OBJECTS) 
+	rm -f NN_algorithms_testbench-riscv.hex NN_algorithms_testbench-riscv.elf 
+	rm -f $(OBJECTS) 
+	rm -f assemblerContentsIntermixSourceCode.txt assemblerContents.txt
 
 .PHONY : full_clean
 full_clean:
@@ -71,3 +75,11 @@ test:
 	@echo $(MAIN_DIR)
 	@echo $(SOURCE_DIR)
 	@echo $(HEADER_DIR)
+	
+.PHOMY : analyze_assembly
+analyze_assembly:
+	riscv32-unknown-elf-objdump NN_algorithms_testbench-riscv.elf  -d > assemblerContents.txt
+	riscv32-unknown-elf-objdump NN_algorithms_testbench-riscv.elf  -S > assemblerContentsIntermixSourceCode.txt
+	
+	
+	
