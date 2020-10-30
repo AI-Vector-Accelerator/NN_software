@@ -10,6 +10,11 @@ int main(void) {
 	testbench_vectorReLu();
 	testbench_vectorReLu6();
 
+	testbench_matrix_mult_d8();
+	testbench_matrix_add_d8();
+	testbench_max_pool_d8();
+	testbench_avg_pool_d8();
+
 	testbench_conv2D_multiInputChannel();
 	testbench_conv2D();
 	testbench_conv2D_multiIOChannel();
@@ -217,6 +222,86 @@ void testbench_conv2D_depthwiseSeparable_multiOutputChannel(){
 
 	printf("\n\nOutput:\n");
 	printMatrix3D(outputDataHeight,outputDataWidth,batch,output);
+	printf("\n");
+}
+
+void testbench_matrix_add_d8(){
+	const uint32_t height=3,width=3;
+	int8_t MatA[height][width], MatB[height][width],MatC[height][width];
+
+	printf("\ntestbench_matrix_add_d8  \n");
+	randFillMatrix2D(height,width,MatA);
+	randFillMatrix2D(height,width,MatB);
+
+
+	printf("\nMatrix A:\n");
+	printMatrix2D(height,width,MatA);
+	printf("Matrix B:\n");
+	printMatrix2D(height,width,MatB);
+
+	matrix_add_d8(height,width,MatA,MatB,MatC);
+
+	printf("Output:\n");
+	printMatrix2D(height,width,MatC);
+	printf("\n");
+}
+
+void testbench_matrix_mult_d8(){
+	const uint32_t height=3,width=3;
+	int8_t MatA[height][width], MatB[height][width],MatC[height][width];
+
+	printf("\ntestbench_matrix_mult_d8  \n");
+	fillVector(width,MatA[0],-1);
+	fillVector(width,MatA[1],2);
+	fillVector(width,MatA[2],7);
+
+	fillVector(width,MatB[0],4);
+	fillVector(width,MatB[1],0);
+	fillVector(width,MatB[2],2);
+
+	printf("\nMatrix A:\n");
+	printMatrix2D(height,width,MatA);
+	printf("Matrix B:\n");
+	printMatrix2D(height,width,MatB);
+
+	matrix_mult_d8(height,width,height,width,MatA,MatB,MatC);
+
+	printf("Output:\n");
+	printMatrix2D(height,width,MatC);
+	printf("\n");
+}
+
+void testbench_max_pool_d8(){
+	const uint32_t height=10,width=10,stride=2,filterHeight=2,filterWidth=2;
+	int8_t MatA[height][width], MatC[height/filterHeight][width/filterWidth];
+
+	printf("\ntestbench_max_pool_d8  \n");
+	randFillMatrix2D(height,width,MatA);
+
+	printf("\nMatrix A, filter is 2x2:\n");
+	printMatrix2D(height,width,MatA);
+
+	max_pool_d8(height,width,MatA,filterHeight,filterWidth,stride,MatC);
+
+	printf("Output:\n");
+	printMatrix2D(height/filterHeight,width/filterWidth,MatC);
+	printf("\n");
+}
+
+void testbench_avg_pool_d8(){
+	const uint32_t height=10,width=10,stride=2,filterHeight=2,filterWidth=2;
+	int8_t MatA[height][width], MatC[height/filterHeight][width/filterWidth];
+
+	printf("\ntestbench_avg_pool_d8  \n");
+	randFillMatrix2D(height,width,MatA);
+
+	printf("\nMatrix A, filter is 2x2:\n");
+	printMatrix2D(height,width,MatA);
+
+	avg_pool_d8(height,width,MatA,filterHeight,filterWidth,stride,MatC);
+
+	printf("Output:\n");
+	printMatrix2D(height/filterHeight,width/filterWidth,MatC);
 	printf("\n");
 }
 

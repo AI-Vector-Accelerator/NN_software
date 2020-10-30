@@ -6,7 +6,10 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include "NN_operations/convolution_operations.h"
+#include "NN_operations/matrix_operations.h"
+#include "NN_operations/pooling_operations.h"
 #include "Matrix_IO.h"
+
 
 int main(void);
 
@@ -17,6 +20,11 @@ void testbench_conv2D_multiIOChannel();
 void testbench_conv2D_depthwise();
 void testbench_conv2D_depthwiseSeparable();
 void testbench_conv2D_depthwiseSeparable_multiOutputChannel();
+
+void testbench_matrix_mult_d8();
+void testbench_matrix_add_d8();
+void testbench_max_pool_d8();
+void testbench_avg_pool_d8();
 
 void testbench_dotProduct();
 void testbench_vectorAdd();
