@@ -92,7 +92,7 @@ void testbench_conv2D(){
 	printMatrix2D(height,width,data);
 	printf("\n\nkernel:\n");
 	printMatrix2D(kernel_height,kernel_width,kernel);
-	printf("Stride = %d\n",stride);
+	printf("Stride = %u\n",stride);
 
 	conv2D(height,width,kernel_height,kernel_width,stride,outputDataHeight, outputDataWidth,data,kernel,output);
 

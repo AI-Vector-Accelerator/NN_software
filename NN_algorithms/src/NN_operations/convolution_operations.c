@@ -66,7 +66,9 @@ void conv2D(
 	int8_t kernel[kernel_height][kernel_width],
 	int8_t output[outputDataHeight][outputDataWidth]){
 
-	int8_t dotProduct;
+	conv2D_multiInputChannel(height, width, 1, kernel_height, kernel_width, stride,outputDataHeight, outputDataWidth, data, kernel, output);
+
+/*	int8_t dotProduct;
 	uint32_t vecCounter;
 	uint32_t heightOffset=(kernel_height-kernel_height%2);
 	uint32_t widthOffset=(kernel_width-kernel_width%2);
@@ -95,7 +97,7 @@ void conv2D(
 			vect_dotProduct(vecCounter,kernelVec,tempVec,&dotProduct);
 			output[heightCounter][widthCounter] = dotProduct;
 		}
-	}
+	}*/
 }
 
 void conv2D_multiOutputChannel(
@@ -156,6 +158,7 @@ void conv2D_depthwiseSeparable_multiOutputChannel(
 		conv2D_depthwiseSeparable(height, width, channel, kernel_height, kernel_width, stride,outputDataHeight, outputDataWidth, data, kernelDepthwise, kernelPointwise[batchCounter], output[batchCounter]);
 	}
 }
+
 void matrix3DtoVec(
 	const uint32_t height,const uint32_t width,const uint32_t channel,
 	int8_t matrix[channel][height][width], int8_t *vec){
