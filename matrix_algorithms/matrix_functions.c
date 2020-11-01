@@ -120,7 +120,7 @@ void max_pool_d8 (	const uint8_t	Src_nRows,
 					int8_t			Dst[Src_nRows/Src_filter_nRows]  \
 										[Src_nColumns/Src_filter_nColumns]	)
 {
-	uint8_t max = 0;
+	uint8_t max = -128;
 	for (uint8_t i = 0; i < (int)Src_nRows/Src_filter_nRows; i++)
 	{
 		for (uint8_t j = 0; j < (int)Src_nColumns/Src_filter_nColumns; j++)
@@ -140,7 +140,7 @@ void max_pool_d8 (	const uint8_t	Src_nRows,
 			}
 			
 			Dst[i][j] = max;
-			max = 0;
+			max = -128;
 		}
 	}
 }
