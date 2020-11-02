@@ -47,24 +47,24 @@
  *          
  * @retval  Dst             Matrix out
  */
-void max_pool_d8 (	const uint8_t	Src_nRows,
-					const uint8_t	Src_nColumns,
-					const int8_t	Src[Src_nRows][Src_nColumns],
-					const uint8_t	Src_filter_nRows,
-					const uint8_t	Src_filter_nColumns,
-					const uint8_t	Src_Stride,
+void max_pool_d8 (	const uint32_t	Src_nRows,
+					const uint32_t	Src_nColumns,
+					int8_t	Src[Src_nRows][Src_nColumns],
+					const uint32_t	Src_filter_nRows,
+					const uint32_t	Src_filter_nColumns,
+					const uint32_t	Src_Stride,
 					int8_t			Dst[Src_nRows/Src_filter_nRows]  \
 										[Src_nColumns/Src_filter_nColumns]	){
 
-	uint8_t position_i,position_j,vecCounter;
+	uint32_t position_i,position_j,vecCounter;
 	int8_t max;
 	int8_t tempVec[Src_filter_nRows*Src_filter_nColumns];
 
-	for (uint8_t i = 0; i < (int)Src_nRows/Src_filter_nRows; i++){
-		for (uint8_t j = 0; j < (int)Src_nColumns/Src_filter_nColumns; j++){
+	for (uint32_t i = 0; i < (int)Src_nRows/Src_filter_nRows; i++){
+		for (uint32_t j = 0; j < (int)Src_nColumns/Src_filter_nColumns; j++){
 			vecCounter=0;
-			for (uint8_t k = 0; k < Src_filter_nRows; k++){
-				for (uint8_t l = 0; l < Src_filter_nColumns; l++){
+			for (uint32_t k = 0; k < Src_filter_nRows; k++){
+				for (uint32_t l = 0; l < Src_filter_nColumns; l++){
 					position_i = i*Src_Stride + k;
 					position_j = j*Src_Stride + l;
 					tempVec[vecCounter]=Src[position_i][position_j];
@@ -96,23 +96,23 @@ void max_pool_d8 (	const uint8_t	Src_nRows,
  *          
  * @retval  Dst             Matrix out
  */
-void avg_pool_d8 (	const uint8_t	Src_nRows,
-					const uint8_t	Src_nColumns,
-					const int8_t	Src[Src_nRows][Src_nColumns],
-					const uint8_t	Src_filter_nRows,
-					const uint8_t	Src_filter_nColumns,
-					const uint8_t	Src_Stride,
+void avg_pool_d8 (	const uint32_t	Src_nRows,
+					const uint32_t	Src_nColumns,
+					int8_t	Src[Src_nRows][Src_nColumns],
+					const uint32_t	Src_filter_nRows,
+					const uint32_t	Src_filter_nColumns,
+					const uint32_t	Src_Stride,
 					int8_t			Dst[Src_nRows/Src_filter_nRows]  \
 										[Src_nColumns/Src_filter_nColumns]	){
 
-	uint8_t position_i,position_j,vecCounter;
+	uint32_t position_i,position_j,vecCounter;
 	int8_t sum, tempVec[Src_filter_nRows*Src_filter_nColumns];
 
-	for (uint8_t i = 0; i < (int)Src_nRows/Src_filter_nRows; i++){
-		for (uint8_t j = 0; j < (int)Src_nColumns/Src_filter_nColumns; j++){
+	for (uint32_t i = 0; i < (int)Src_nRows/Src_filter_nRows; i++){
+		for (uint32_t j = 0; j < (int)Src_nColumns/Src_filter_nColumns; j++){
 			vecCounter=0;
-			for (uint8_t k = 0; k < Src_filter_nRows; k++){
-				for (uint8_t l = 0; l < Src_filter_nColumns; l++){
+			for (uint32_t k = 0; k < Src_filter_nRows; k++){
+				for (uint32_t l = 0; l < Src_filter_nColumns; l++){
 					position_i = i*Src_Stride + k;
 					position_j = j*Src_Stride + l;
 					tempVec[vecCounter]=Src[position_i][position_j];

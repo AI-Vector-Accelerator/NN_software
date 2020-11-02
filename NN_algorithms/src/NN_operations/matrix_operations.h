@@ -28,18 +28,18 @@
 
 //-------- Global function prototypes ----------------------------------------//
 
-void matrix_mult_d8 (   const uint8_t   SrcA_nRows,
-                        const uint8_t   SrcA_nColumns,
-                        const uint8_t   SrcB_nRows,
-                        const uint8_t   SrcB_nColumns,
-                        const int8_t    SrcA[SrcA_nRows][SrcA_nColumns],
-                        const int8_t    SrcB[SrcB_nRows][SrcB_nColumns],
+void matrix_mult_d8 (   const uint32_t   SrcA_nRows,
+                        const uint32_t   SrcA_nColumns,
+                        const uint32_t   SrcB_nRows,
+                        const uint32_t   SrcB_nColumns,
+                        int8_t    SrcA[SrcA_nRows][SrcA_nColumns],
+                        int8_t    SrcB[SrcB_nRows][SrcB_nColumns],
                         int8_t          Dst[SrcA_nRows][SrcB_nColumns]     );
 
-void matrix_add_d8 (    const uint8_t   Src_nRows,
-                        const uint8_t   Src_nColumns,
-                        const int8_t    SrcA[Src_nRows][Src_nColumns],
-                        const int8_t    SrcB[Src_nRows][Src_nColumns],
+void matrix_add_d8 (    const uint32_t   Src_nRows,
+                        const uint32_t   Src_nColumns,
+                        int8_t    SrcA[Src_nRows][Src_nColumns],
+                        int8_t    SrcB[Src_nRows][Src_nColumns],
                         int8_t          Dst[Src_nRows][Src_nColumns]     );
 						
 //----------------------------------------------------------------------------//

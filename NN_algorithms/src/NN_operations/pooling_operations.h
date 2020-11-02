@@ -29,21 +29,21 @@
 //-------- Global function prototypes ----------------------------------------//
 
 						
-void max_pool_d8 (	const uint8_t	Src_nRows,
-					const uint8_t	Src_nColumns,
-					const int8_t	Src[Src_nRows][Src_nColumns],
-					const uint8_t	Src_filter_nRows,
-					const uint8_t	Src_filter_nColumns,
-					const uint8_t	Src_Stride,
+void max_pool_d8 (	const uint32_t	Src_nRows,
+					const uint32_t	Src_nColumns,
+					int8_t	Src[Src_nRows][Src_nColumns],
+					const uint32_t	Src_filter_nRows,
+					const uint32_t	Src_filter_nColumns,
+					const uint32_t	Src_Stride,
 					int8_t			Dst[Src_nRows/Src_filter_nRows]  \
 										[Src_nColumns/Src_filter_nColumns]	);
 					
-void avg_pool_d8 (	const uint8_t	Src_nRows,
-					const uint8_t	Src_nColumns,
-					const int8_t	Src[Src_nRows][Src_nColumns],
-					const uint8_t	Src_filter_nRows,
-					const uint8_t	Src_filter_nColumns,
-					const uint8_t	Src_Stride,
+void avg_pool_d8 (	const uint32_t	Src_nRows,
+					const uint32_t	Src_nColumns,
+					int8_t	Src[Src_nRows][Src_nColumns],
+					const uint32_t	Src_filter_nRows,
+					const uint32_t	Src_filter_nColumns,
+					const uint32_t	Src_Stride,
 					int8_t			Dst[Src_nRows/Src_filter_nRows]  \
 										[Src_nColumns/Src_filter_nColumns]	);					
 //----------------------------------------------------------------------------//
