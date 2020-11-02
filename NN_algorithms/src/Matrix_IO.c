@@ -1,7 +1,7 @@
 #include "Matrix_IO.h"
 
 int8_t getRandomNumber(){
-	return rand();
+	return rand()%32-16;
 }
 
 void randFillMatrix4D(const uint32_t batch,const uint32_t height,const uint32_t width,const uint32_t channel, int8_t matrix[batch][channel][height][width]){

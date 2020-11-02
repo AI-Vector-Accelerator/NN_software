@@ -208,6 +208,10 @@ void testbench_conv2D_depthwiseSeparable_multiOutputChannel(){
 	printf("\ntestbench_conv2D_depthwiseSeparable_multiOutputChannel  \n");
 	randFillMatrix3D(height,width,channel,data);
 	randFillMatrix3D(kernel_height,kernel_width,channel,kernelDepthWise);
+	fillMatrix3D(kernel_height,kernel_width,channel,kernelDepthWise,0);
+	kernelDepthWise[0][1][1]=1;
+	kernelDepthWise[1][1][1]=1;
+	kernelDepthWise[2][1][1]=1;
 	for(uint32_t b=0;b<batch;b++){fillVector(channel,kernelPointwise[b],b);}
 
 
@@ -251,13 +255,15 @@ void testbench_matrix_mult_d8(){
 	int8_t MatA[height][width], MatB[height][width],MatC[height][width];
 
 	printf("\ntestbench_matrix_mult_d8  \n");
-	fillVector(width,MatA[0],-1);
+	/*fillVector(width,MatA[0],-1);
 	fillVector(width,MatA[1],2);
 	fillVector(width,MatA[2],7);
 
 	fillVector(width,MatB[0],4);
 	fillVector(width,MatB[1],0);
-	fillVector(width,MatB[2],2);
+	fillVector(width,MatB[2],2);*/
+	randFillMatrix2D(height,width,MatA);
+	randFillMatrix2D(height,width,MatB);
 
 	printf("\nMatrix A:\n");
 	printMatrix2D(height,width,MatA);

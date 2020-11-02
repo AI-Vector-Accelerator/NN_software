@@ -2,28 +2,28 @@
 
 void vect_add(unsigned int N, const int8_t *vec1, const int8_t *vec2, int8_t *vecOut){
 	for(unsigned int n =0; n<N; n++){
-		vecOut[n]= vec1[n] + vec2[n];
+		vecOut[n]=saturate( vec1[n] + vec2[n] );
 	}
 }
 
 void vect_addRecursive(unsigned int N, const int8_t *vec1, int8_t *scalarOut){
 	int8_t temp=0;
 	for(unsigned int n =0; n<N; n++){
-		temp += vec1[n];
+		temp =saturate( temp + vec1[n] );
 	}
 	*scalarOut=temp;
 }
 
 void vect_mult(unsigned int N,const int8_t *vec1, const int8_t *vec2, int8_t *vecOut){
 	for(unsigned int n =0; n<N; n++){
-		vecOut[n]= vec1[n] * vec2[n];
+		vecOut[n]=saturate( vec1[n] * vec2[n] );
 	}
 }
 
 void vect_dotProduct(unsigned int N, const int8_t *vec1, const int8_t *vec2, int8_t *scalarOut){
 	int8_t temp=0;
 	for(unsigned int n =0; n<N; n++){
-		temp += vec1[n] * vec2[n];
+		temp =saturate( (int16_t)(temp + vec1[n] * vec2[n]) );
 	}
 	*scalarOut=temp;
 }
@@ -47,5 +47,15 @@ void vect_ReLu6(unsigned int N, const int8_t *vec1, int8_t *vecOut){     //maybe
 		}else{
 			vecOut[n]=vec1[n];
 		}
+	}
+}
+
+int8_t saturate(int16_t input){
+	if(input>MAX_INT8_T){
+		return MAX_INT8_T;
+	}else if(input<MIN_INT8_T){
+		return MIN_INT8_T;
+	}else{
+		return (int8_t)input;
 	}
 }
