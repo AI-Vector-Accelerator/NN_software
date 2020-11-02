@@ -78,7 +78,7 @@ void fillVector(const uint32_t N, int8_t vector[N],int8_t number){
 
 void printMatrix4D(const uint32_t batch,const uint32_t height,const uint32_t width,const uint32_t channel, int8_t matrix[batch][channel][height][width]){
 	for(uint32_t b=0;b<batch;b++){
-		printf("\nBatch %3u ",b);
+		printf("\nBatch %3u ",(int)b);
 		for(uint32_t w=0;w<width*channel+channel-1;w++){printf("------");}
 		printMatrix3D(height,width,channel,matrix[b]);
 	}
@@ -91,7 +91,7 @@ void printMatrix3D(const uint32_t height,const uint32_t width,const uint32_t cha
 	printf("\n");
 	printf("Channel:");
 	for(uint32_t c=0;c<channel;c++){
-		printf("%4u",c);
+		printf("%4u",(int)c);
 		for(uint32_t w=0;w<width-1;w++){
 			printf("      ");
 		}
