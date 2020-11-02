@@ -66,7 +66,7 @@ void conv2D(
 	int8_t kernel[kernel_height][kernel_width],
 	int8_t output[outputDataHeight][outputDataWidth]){
 
-	conv2D_multiInputChannel(height, width, 1, kernel_height, kernel_width, stride,outputDataHeight, outputDataWidth, data, kernel, output);
+	conv2D_multiInputChannel(height, width, 1, kernel_height, kernel_width, stride,outputDataHeight, outputDataWidth, (int8_t (*)[height][width])data, (int8_t (*)[kernel_height][kernel_width])kernel, output);
 
 /*	int8_t dotProduct;
 	uint32_t vecCounter;
@@ -141,7 +141,7 @@ void conv2D_depthwiseSeparable(
 	int8_t temp[channel][outputDataHeight][outputDataWidth];
 
 	conv2D_depthwise(height,width,channel,kernel_height,kernel_width,stride,outputDataHeight,outputDataWidth,data,kernelDepthwise,temp);
-	conv2D_multiInputChannel(outputDataHeight,outputDataWidth,channel,1,1,stride,outputDataHeight,outputDataWidth,temp,kernelPointwise,output);
+	conv2D_multiInputChannel(outputDataHeight,outputDataWidth,channel,1,1,stride,outputDataHeight,outputDataWidth,temp,(int8_t (*)[1][1])kernelPointwise,output);
 }
 
 void conv2D_depthwiseSeparable_multiOutputChannel(
