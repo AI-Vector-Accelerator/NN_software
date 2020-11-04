@@ -4,7 +4,7 @@
  * @brief       Functions for matrices
  *
  *****************************************************************************
- * @author      Aaryaman
+ * @author      		Aaryaman
  *
  *****************************************************************************
  * 
@@ -71,10 +71,7 @@ void max_pool_d8 (	const uint32_t	Src_nRows,
 					vecCounter++;
 				}
 			}
-			max = -128;//8-bit signed minimum
-			for(vecCounter=0;vecCounter<Src_filter_nRows*Src_filter_nColumns;vecCounter++){		//is it possible to make vector instruction for this compare?
-				if (max < tempVec[vecCounter]){max = tempVec[vecCounter];}
-			}
+			vect_maxRecursive(vecCounter, tempVec, &max);
 			Dst[i][j] = max;
 		}
 	}

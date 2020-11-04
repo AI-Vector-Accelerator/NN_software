@@ -60,12 +60,11 @@ run:
 clean:
 	rm -f NN_algorithms_testbench-riscv.hex NN_algorithms_testbench-riscv.elf 
 	rm -f $(OBJECTS) 
-	rm -f assemblerContentsIntermixSourceCode.txt assemblerContents.txt
-
+	
 .PHONY : full_clean
 full_clean:
 	make clean
-	rm -f memory_dump.bin
+	rm -f memory_dump.bin assemblerContentsIntermixSourceCode.txt assemblerContents.txt
 	rm -r -f src
 
 .PHONY : test
