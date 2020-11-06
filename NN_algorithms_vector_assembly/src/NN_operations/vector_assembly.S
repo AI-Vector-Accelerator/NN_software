@@ -55,7 +55,7 @@ vlw.v v0, (a1) # Get first vector
    sub a0, a0, t0 # Decrement number done 
    slli t0, t0, 2 # Multiply number done by 4 bytes 
    add a1, a1, t0 # Bump pointer 
-vmax.vv v2, v0, 0 # max vectors 
+vmax.vx v2, v0, 0 # max vectors 
 vsw.v v2, (a3) # Store result 
   add a3, a3, t0 # Bump pointer 
   bnez a0, vect_ReLu # Loop back 
@@ -72,8 +72,8 @@ vlw.v v0, (a1) # Get first vector
    sub a0, a0, t0 # Decrement number done 
    slli t0, t0, 2 # Multiply number done by 4 bytes 
    add a1, a1, t0 # Bump pointer 
-vmax.vv v1, v0, 0 # max vectors 
-vmin.vv v2, v1, 6 # min vectors 
+vmax.vx v1, v0, 0 # max vectors 
+vmin.vx v2, v1, 6 # min vectors 
 vsw.v v2, (a3) # Store result 
    add a3, a3, t0 # Bump pointer 
    bnez a0, vect_ReLu6 # Loop back 
