@@ -9,7 +9,7 @@ void conv2D_multiInputChannel(
 	int8_t kernel[channel][kernel_height][kernel_width],
 	int8_t output[outputDataHeight][outputDataWidth]){
 
-	int8_t dotProduct;
+	int32_t dotProduct;
 	uint32_t vecCounter;
 	uint32_t heightOffset=(kernel_height-kernel_height%2);
 	uint32_t widthOffset=(kernel_width-kernel_width%2);
@@ -38,7 +38,7 @@ void conv2D_multiInputChannel(
 				}
 			}
 			vect_dotProduct(vecCounter,kernelVec,tempVec,&dotProduct);
-			output[heightCounter][widthCounter] = dotProduct;
+			output[heightCounter][widthCounter] = saturate_32bit_to_8bit( dotProduct );
 		}
 	}
 }
@@ -67,37 +67,6 @@ void conv2D(
 	int8_t output[outputDataHeight][outputDataWidth]){
 
 	conv2D_multiInputChannel(height, width, 1, kernel_height, kernel_width, stride,outputDataHeight, outputDataWidth, (int8_t (*)[height][width])data, (int8_t (*)[kernel_height][kernel_width])kernel, output);
-
-/*	int8_t dotProduct;
-	uint32_t vecCounter;
-	uint32_t heightOffset=(kernel_height-kernel_height%2);
-	uint32_t widthOffset=(kernel_width-kernel_width%2);
-	uint32_t dataHeightPosition,dataWeightPosition;
-	int8_t kernelVec[kernel_width*kernel_height];
-	int8_t tempVec[kernel_width*kernel_height];
-	matrix2DtoVec(kernel_width,kernel_height,kernel,kernelVec);
-
-	for(uint32_t heightCounter=0;heightCounter<outputDataHeight;heightCounter++){
-		for(uint32_t widthCounter=0;widthCounter<outputDataWidth;widthCounter++){
-			vecCounter=0;
-			for(int heightOffsetCounter=-(int)heightOffset/2;heightOffsetCounter<(int)(heightOffset/2 + kernel_height%2);heightOffsetCounter++){
-				for(int widthOffsetCounter=-(int)widthOffset/2;widthOffsetCounter<(int)(widthOffset/2 + kernel_width%2);widthOffsetCounter++){
-					dataHeightPosition=heightCounter+heightOffset/2+heightOffsetCounter;
-					dataWeightPosition=widthCounter+widthOffset/2+widthOffsetCounter;
-					dataHeightPosition*=stride;
-					dataWeightPosition*=stride;
-					if( (dataHeightPosition<0 || dataHeightPosition>=height) || (dataWeightPosition<0 || dataWeightPosition>=width) ){
-						tempVec[vecCounter]=0;
-					}else{
-						tempVec[vecCounter]=data[dataHeightPosition][dataWeightPosition];
-					}
-					vecCounter++;
-				}
-			}
-			vect_dotProduct(vecCounter,kernelVec,tempVec,&dotProduct);
-			output[heightCounter][widthCounter] = dotProduct;
-		}
-	}*/
 }
 
 void conv2D_multiOutputChannel(

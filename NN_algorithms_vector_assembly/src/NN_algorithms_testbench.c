@@ -29,7 +29,8 @@ int main(void) {
 
 void testbench_dotProduct(){
 	const uint32_t N=5;
-	int8_t A[N],B[N],output;
+	int8_t A[N],B[N];
+	int32_t output;
 	printf("\ntestbench_dotProduct\n\n");
 	randFillVector(N,A);
 	randFillVector(N,B);
@@ -40,7 +41,7 @@ void testbench_dotProduct(){
 
 	vect_dotProduct(N,A,B, &output);
 
-	printf("\nOutput: %d\n\n\n",output);
+	printf("\nOutput: %d\n\n\n",(int)output);
 }
 
 void testbench_vectorAdd(){
@@ -136,6 +137,13 @@ void testbench_matrix_mult_d8(){
 	int8_t MatA[height][width], MatB[height][width],MatC[height][width];
 
 	printf("\ntestbench_matrix_mult_d8  \n");
+	/*fillVector(width,MatA[0],-1);
+	fillVector(width,MatA[1],2);
+	fillVector(width,MatA[2],7);
+
+	fillVector(width,MatB[0],4);
+	fillVector(width,MatB[1],0);
+	fillVector(width,MatB[2],2);*/
 	randFillMatrix2D(height,width,MatA);
 	randFillMatrix2D(height,width,MatB);
 

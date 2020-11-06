@@ -29,7 +29,8 @@ int main(void) {
 
 void testbench_dotProduct(){
 	const uint32_t N=5;
-	int8_t A[N],B[N],output;
+	int8_t A[N],B[N];
+	int32_t output;
 	printf("\ntestbench_dotProduct\n\n");
 	randFillVector(N,A);
 	randFillVector(N,B);
@@ -40,7 +41,7 @@ void testbench_dotProduct(){
 
 	vect_dotProduct(N,A,B, &output);
 
-	printf("\nOutput: %d\n\n\n",output);
+	printf("\nOutput: %d\n\n\n",(int)output);
 }
 
 void testbench_vectorAdd(){

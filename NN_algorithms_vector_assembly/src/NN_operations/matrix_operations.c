@@ -51,14 +51,14 @@ void matrix_mult_d8 (   const uint32_t   SrcA_nRows,
                         int8_t    SrcB[SrcB_nRows][SrcB_nColumns],
                         int8_t          Dst[SrcA_nRows][SrcB_nColumns]     ){
 
-	int8_t dotProduct;
+	int32_t dotProduct;
 	int8_t tempVec[SrcB_nRows];
 
     for (uint32_t i = 0; i < SrcA_nRows; i++){
         for(uint32_t j = 0; j < SrcB_nColumns; j++){
            for(uint32_t k = 0; k < SrcA_nColumns; k++){tempVec[k]=SrcB[k][j];}
            vect_dotProduct(SrcA_nColumns,SrcA[i],tempVec,&dotProduct);
-           Dst[i][j]=dotProduct;
+           Dst[i][j]=saturate_32bit_to_8bit( dotProduct );
         }
     }
 }

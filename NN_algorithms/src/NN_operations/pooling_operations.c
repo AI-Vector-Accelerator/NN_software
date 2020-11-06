@@ -71,7 +71,7 @@ void max_pool_d8 (	const uint32_t	Src_nRows,
 					vecCounter++;
 				}
 			}
-			vect_maxRecursive(vecCounter, tempVec, &max);
+			vect_maxReduction(vecCounter, tempVec, &max);
 			Dst[i][j] = max;
 		}
 	}
@@ -103,7 +103,8 @@ void avg_pool_d8 (	const uint32_t	Src_nRows,
 										[Src_nColumns/Src_filter_nColumns]	){
 
 	uint32_t position_i,position_j,vecCounter;
-	int8_t sum, tempVec[Src_filter_nRows*Src_filter_nColumns];
+	int8_t tempVec[Src_filter_nRows*Src_filter_nColumns];
+	int16_t sum;
 
 	for (uint32_t i = 0; i < (int)Src_nRows/Src_filter_nRows; i++){
 		for (uint32_t j = 0; j < (int)Src_nColumns/Src_filter_nColumns; j++){
@@ -116,8 +117,8 @@ void avg_pool_d8 (	const uint32_t	Src_nRows,
 					vecCounter++;
 				}
 			}
-			vect_addRecursive(vecCounter,tempVec,&sum);
-			Dst[i][j] = sum/vecCounter;	//average is sum/(number of elements in filter)
+			vect_addReduction(vecCounter,tempVec,&sum);
+			Dst[i][j] = saturate_16bit_to_8bit( sum/(int16_t)vecCounter );	//average is sum/(number of elements in filter)
 		}
 	}
 }
