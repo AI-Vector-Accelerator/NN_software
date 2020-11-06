@@ -1,5 +1,5 @@
 #include "vector_operations.h"
-
+/*
 void vect_add(unsigned int N, const int8_t *vec1, const int8_t *vec2, int8_t *vecOut){
 	for(unsigned int n =0; n<N; n++){
 		vecOut[n]= vec1[n] + vec2[n];
@@ -11,7 +11,7 @@ void vect_mult(unsigned int N,const int8_t *vec1, const int8_t *vec2, int8_t *ve
 		vecOut[n]= vec1[n] * vec2[n];
 	}
 }
-/*
+
 void vect_addRecursive(unsigned int N, const int8_t *vec1, int8_t *scalarOut){
 	int8_t temp=0;
 	for(unsigned int n =0; n<N; n++){
@@ -34,7 +34,7 @@ void vect_dotProduct(unsigned int N, const int8_t *vec1, const int8_t *vec2, int
 		temp =temp + vec1[n] * vec2[n];
 	}
 	*scalarOut=temp;
-}*/
+}
 
 void vect_ReLu(unsigned int N, const int8_t *vec1, int8_t *vecOut){
 	for(unsigned int n =0; n<N; n++){
@@ -57,6 +57,6 @@ void vect_ReLu6(unsigned int N, const int8_t *vec1, int8_t *vecOut){     //maybe
 		}
 	}
 }
-
+*/
 
 
