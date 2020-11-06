@@ -1,6 +1,6 @@
 #define MIN_INT8_T -128
 
-vect_dotProduct:  #vect_dotProduct(unsigned int N, const int8_t *vec1, const int8_t *vec2, int8_t *scalarOut)
+vect_dotProduct:  #vect_dotProduct(unsigned int N, const int8_t *vec1, const int8_t *vec2, int32_t *scalarOut)
 	# a0=N, a1=*vec1, a2=*vec2, a3=*scalarOut
 	# v1=vec1, v2=vec2, v3=scalarOut, v4=vec1 * vec2
 	vsetvli t0, a0, e8      	# Set vectors to be of 8 bits
@@ -17,36 +17,42 @@ loop_vect_dotProduct:
 	  sub a0, a0, t0        	# Decrement number of bytes done
 	  bnez a0, loop_vect_dotProduct	# loop back for any more 
 	vsetvli t0, a0, e32		    # set vector to 32-bit element
-	vsw.v v3, 0(a3)				# store result in 
+	vsw.v v3, (a3)				# store result in 
 	  ret						# return
 
 	  
 # --------to be changed ---------------	  
-vect_addRecursive:	#vect_addRecursive(unsigned int N, const int8_t *vec1, int8_t *scalarOut)
+vect_addReduction:	#vect_addReduction(unsigned int N, const int8_t *vec1, int16_t *scalarOut)
 	vmv.v.i v0, 0					# set temp vector to 0
-loop_vect_addRecursive:
+loop_vect_addReduction:
 	vsetvli t0, a0, e8      		# Set vectors to be of 8 bits
 	vlb.v v0, (a1)          		# Get first vector
 	  add a1, a1, t0        		# Bump pointer
 	  sub a0, a0, t0        		# Decrement number of bytes done
 	vredsum.vs v1, v0, v1  			# reduction sum vector
-	  bnez a0, loop_vect_addRecursive	# loop back for any more 
+	  bnez a0, loop_vect_addReduction	# loop back for any more 
 	  vmv.x.s a3, v1				# move answer to register
-	  sb	a3,0(a2)				# finished loop, store answer
+	  sb	a3, 0(a2)				# finished loop, store answer
 	  ret							# return
 
 
-vect_maxRecursive:	#vect_maxRecursive(unsigned int N, const int8_t *vec1, int8_t *scalarOut)
+vect_maxReduction:	#vect_maxReduction(unsigned int N, const int8_t *vec1, int8_t *scalarOut)
+	# a0=N, a1=*vec1, a2=*scalarOut
+	# v1=vec1, v2=scalarOut
 	vmv.v.i v2, MIN_INT8_T				#copy min value into temp vec
-loop_vect_maxRecursive:
+loop_vect_maxReduction:
 	vsetvli t0, a0, e8      		# Set vectors to be of 8 bits
 	vlb.v v1, (a1)          		# Get first vector
 	  add a1, a1, t0        		# Bump pointer
 	  sub a0, a0, t0        		# Decrement number of bytes done
 	vredmax.vs v2, v1, v2  			# max vector
-	  bnez a0, loop_vect_maxRecursive	# loop back for any more 
+	  bnez a0, loop_vect_maxReduction	# loop back for any more 
 	  vsb.v v2, (a2)				# store result 
 	  ret							# return
+
+
+
+
 
 #void vect_ReLu(unsigned int N, const int8_t *vec1, int8_t *vecOut);
 # appendix A.1. Vector-vector add example riscv-v-spec-0.8
@@ -84,6 +90,10 @@ vsw.v v2, (a3) # Store result
    ret # Finished
 
 
+
+
+
+
 #void vect_add(unsigned int N, const int8_t *vec1, const int8_t *vec2, int8_t *vecOut);
 # appendix A.1. Vector-vector add example riscv-v-spec-0.8
 # a0 = N, a1 = vec1,a2,vec2 a3 = vecOut 
@@ -118,5 +128,5 @@ vec_mult:
 	vmul.vv v2, v0, v1 		# Multiply vectors
 	vsw.v v2, (a3) 			# Store result
 		add a3, a3, t0 		# Bump pointer
-		bnez a0, vvaddint32 # Loop back
+		bnez a0, vec_mult # Loop back
 		ret 				# Finished
