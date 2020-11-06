@@ -1,4 +1,3 @@
-
 #define MIN_INT8_T -128
 
 vect_dotProduct:  #vect_dotProduct(unsigned int N, const int8_t *vec1, const int8_t *vec2, int8_t *scalarOut)
@@ -46,7 +45,7 @@ loop_vect_maxRecursive:
 	  ret							# return
 
 #void vect_ReLu(unsigned int N, const int8_t *vec1, int8_t *vecOut);
-# appendix A.1. Vector-vector add example
+# appendix A.1. Vector-vector add example riscv-v-spec-0.8
 # a0 = N, a1 = vec1, a3 = vecOut 
 # Non-vector instructions are indented
 
@@ -64,6 +63,9 @@ vsw.v v2, (a3) # Store result
 
 
 #void vect_ReLu6(unsigned int N, const int8_t *vec1, int8_t *vecOut);
+# appendix A.1. Vector-vector add example riscv-v-spec-0.8
+# a0 = N, a1 = vec1, a3 = vecOut 
+# Non-vector instructions are indented
 
 vect_ReLu6: vsetvli t0, a0, e8 # Set vector length based on 8-bit vectors
 vlw.v v0, (a1) # Get first vector 
@@ -79,7 +81,7 @@ vsw.v v2, (a3) # Store result
 
 
 #void vect_add(unsigned int N, const int8_t *vec1, const int8_t *vec2, int8_t *vecOut);
-# appendix A.1. Vector-vector add example
+# appendix A.1. Vector-vector add example riscv-v-spec-0.8
 # a0 = N, a1 = vec1,a2,vec2 a3 = vecOut 
 # Non-vector instructions are indented
 
