@@ -20,8 +20,7 @@ loop_vect_dotProduct:
 	vsw.v v3, (a3)				# store result in 
 	  ret						# return
 
-	  
-# --------to be changed ---------------	  
+	  	  
 vect_addReduction:	#vect_addReduction(unsigned int N, const int8_t *vec1, int16_t *scalarOut)
 	vmv.v.i v0, 0					# set temp vector to 0
 loop_vect_addReduction:
