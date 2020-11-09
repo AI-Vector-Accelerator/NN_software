@@ -110,7 +110,7 @@ vect_add:
 	 add a1, a1, t0         # Bump pointer
    vlw.v v1, (a2)           # Get second vector
 	 add a2, a2, t0         # Bump pointer    
-   vadd.vv v2, v0, v1        # Sum vectors    
+   vsadd.vv v2, v0, v1        # Sum vectors    
    vsw.v v2, (a3)           # Store result      
      add a3, a3, t0         # Bump pointer      
      bnez a0, vect_add    # Loop back      
@@ -128,7 +128,7 @@ vec_mult:
 		add a1, a1, t0 		# Bump pointer
 	vlw.v v1, (a2) 			# Get second vector
 		add a2, a2, t0 		# Bump pointer
-	vmul.vv v2, v0, v1 		# Multiply vectors
+	vsmul.vv v2, v0, v1 		# Multiply vectors
 	vsw.v v2, (a3) 			# Store result
 		add a3, a3, t0 		# Bump pointer
 		bnez a0, vec_mult # Loop back
