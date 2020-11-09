@@ -29,9 +29,10 @@ loop_vect_addReduction:
 	vlb.v v0, (a1)          		# Get first vector
 	  add a1, a1, t0        		# Bump pointer
 	  sub a0, a0, t0        		# Decrement number of bytes done
-	vredsum.vs v1, v0, v1  			# reduction sum vector
+	vwredsum.vs v1, v0, v1  			# reduction sum vector
 	  bnez a0, loop_vect_addReduction	# loop back for any more 
-	  vmv.x.s a3, v1				# move answer to register
+	vsetvli t0, a0, e16          #Set vectors to be of 16 bits
+	vmv.x.s a3, v1				# move answer to register
 	  sb	a3, 0(a2)				# finished loop, store answer
 	  ret							# return
 
