@@ -7,9 +7,9 @@ vect_dotProduct:  #vect_dotProduct(unsigned int N, const int8_t *vec1, const int
 	vmv.v.i v3, 0				# set result vector to 0
 loop_vect_dotProduct:
 	vsetvli t0, a0, e8      	# Set vectors to be of 8 bits
-	vlb.v v1, (a1)          	# Get first vector
+	vle.v v1, (a1)          	# Get first vector
 	  add a1, a1, t0        	# Bump pointer
-	vlb.v v2, (a2)          	# Get second vector
+	vle.v v2, (a2)          	# Get second vector
       add a2, a2, t0        	# Bump pointer
 	vwmul.vv v4, v2, v1  		# multiply vectors(widening instruction)
 	vsetvli t0, a0, e16, m2     # output now in 2 vector registers, update to 16-bit elements
@@ -17,7 +17,7 @@ loop_vect_dotProduct:
 	  sub a0, a0, t0        	# Decrement number of bytes done
 	  bnez a0, loop_vect_dotProduct	# loop back for any more 
 	vsetvli t0, a0, e32		    # set vector to 32-bit element
-	vsw.v v3, (a3)				# store result in 
+	vse.v v3, (a3)				# store result in 
 	  ret						# return
 
 	  	  
@@ -25,7 +25,7 @@ vect_addReduction:	#vect_addReduction(unsigned int N, const int8_t *vec1, int16_
 	vmv.v.i v0, 0					# set temp vector to 0
 loop_vect_addReduction:
 	vsetvli t0, a0, e8      		# Set vectors to be of 8 bits
-	vlb.v v0, (a1)          		# Get first vector
+	vle.v v0, (a1)          		# Get first vector
 	  add a1, a1, t0        		# Bump pointer
 	  sub a0, a0, t0        		# Decrement number of bytes done
 	vwredsum.vs v1, v0, v1  			# reduction sum vector
@@ -42,7 +42,7 @@ vect_maxReduction:	#vect_maxReduction(unsigned int N, const int8_t *vec1, int8_t
 	vmv.v.i v2, MIN_INT8_T				#copy min value into temp vec
 loop_vect_maxReduction:
 	vsetvli t0, a0, e8      		# Set vectors to be of 8 bits
-	vlb.v v1, (a1)          		# Get first vector
+	vle.v v1, (a1)          		# Get first vector
 	  add a1, a1, t0        		# Bump pointer
 	  sub a0, a0, t0        		# Decrement number of bytes done
 	vredmax.vs v2, v1, v2  			# max vector
@@ -68,7 +68,7 @@ vlw.v v1, (a1) # Get first vector
    add a1, a1, t0 # Bump pointer 
    addi a2,x0,0 #set a2 to 0
 vmax.vx v2, v1, a2 # max vectors 
-vsw.v v2, (a3) # Store result 
+vse.v v2, (a3) # Store result 
   add a3, a3, t0 # Bump pointer 
   bnez a0, vect_ReLu # Loop back 
   ret # Finished
@@ -88,7 +88,7 @@ vlw.v v1, (a1) # Get first vector
    addi a4, x0, 6 #set a4 to 6
 vmax.vx v2, v1, a2 # max vectors 
 vmin.vx v3, v2, a4 # min vectors 
-vsw.v v3, (a3) # Store result 
+vse.v v3, (a3) # Store result 
    add a3, a3, t0 # Bump pointer 
    bnez a0, vect_ReLu6 # Loop back 
    ret # Finished
@@ -112,7 +112,7 @@ vect_add:
    vlw.v v1, (a2)           # Get second vector
 	 add a2, a2, t0         # Bump pointer    
    vsadd.vv v2, v0, v1        # Sum vectors    
-   vsw.v v2, (a3)           # Store result      
+   vse.v v2, (a3)           # Store result      
      add a3, a3, t0         # Bump pointer      
      bnez a0, vect_add    # Loop back      
      ret                    # Finished
@@ -127,10 +127,10 @@ vec_mult:
 		sub a0, a0, t0 		# Decrement number done
 		slli t0, t0, 2 		# Multiply number done by 4 bytes
 		add a1, a1, t0 		# Bump pointer
-	vlw.v v1, (a2) 			# Get second vector
+	vle.v v1, (a2) 			# Get second vector
 		add a2, a2, t0 		# Bump pointer
 	vsmul.vv v2, v0, v1 		# Multiply vectors
-	vsw.v v2, (a3) 			# Store result
+	vse.v v2, (a3) 			# Store result
 		add a3, a3, t0 		# Bump pointer
 		bnez a0, vec_mult # Loop back
 		ret 				# Finished
