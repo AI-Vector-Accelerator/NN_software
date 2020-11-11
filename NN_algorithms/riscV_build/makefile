@@ -1,5 +1,9 @@
 RV_COMPILER_OPTIONS = -Os -g -static -mabi=ilp32 -march=rv32imc -Wall -pedantic 
 RV_LINKING_OPTIONS = ${RV_COMPILER_OPTIONS} -nostartfiles
+RV_LINKING_OPTIONS_SPIKE = ${RV_COMPILER_OPTIONS} -static
+
+SPIKE_SIM_FLAGS= --isa=RV32IMC 
+PK_DIR=/opt/riscv/riscv32-unknown-elf/bin
 
 LINKER_SCRIPT =  ../lib/link.ld
 LIB_DIR =  ../lib/
@@ -8,8 +12,6 @@ TC_PREFIX = riscv32-unknown-elf-
 
 CC = ${TC_PREFIX}gcc
 OBJCOPY = ${TC_PREFIX}objcopy
-
-SPIKE_OPTIONS = --isa=RV32GC
 
 HEADER_DIR = ../src   ../src/NN_operations 
 SOURCE_DIR = ../src    ../src/NN_operations 
@@ -26,7 +28,10 @@ NN_algorithms_testbench-riscv.hex: NN_algorithms_testbench-riscv.elf
 NN_algorithms_testbench-riscv.elf: $(OBJECTS) 
 	${CC} ${RV_LINKING_OPTIONS} -o NN_algorithms_testbench-riscv.elf   \
 		 -L ${LIB_DIR} -lcv-verif -T ${LINKER_SCRIPT} $(OBJECTS)
-	
+
+NN_algorithms_testbench-riscv_spike.elf: $(OBJECTS) 
+	${CC} ${RV_LINKING_OPTIONS_SPIKE} -o NN_algorithms_testbench-riscv_spike.elf   \
+		 -L ${LIB_DIR} -lcv-verif -T ${LINKER_SCRIPT} $(OBJECTS)	
 		
 %.o : %.c
 	${CC} ${RV_COMPILER_OPTIONS}   -c -o $@ $< 
@@ -51,6 +56,7 @@ all:
 	make
 	make analyze_assembly
 	make run
+	make spike
 
 .PHONY : run
 run: 
@@ -58,7 +64,7 @@ run:
 
 .PHONY : clean
 clean:
-	rm -f NN_algorithms_testbench-riscv.hex NN_algorithms_testbench-riscv.elf 
+	rm -f NN_algorithms_testbench-riscv.hex NN_algorithms_testbench-riscv.elf NN_algorithms_testbench-riscv_spike.elf
 	rm -f $(OBJECTS) 
 	
 .PHONY : full_clean
@@ -79,6 +85,10 @@ test:
 analyze_assembly:
 	riscv32-unknown-elf-objdump NN_algorithms_testbench-riscv.elf  -d > assemblerContents.txt
 	riscv32-unknown-elf-objdump NN_algorithms_testbench-riscv.elf  -S > assemblerContentsIntermixSourceCode.txt
+	
+.PHONY : spike
+spike: NN_algorithms_testbench-riscv_spike.elf
+	spike  $(SPIKE_SIM_FLAGS) $(flags) $(PK_DIR)/pk NN_algorithms_testbench-riscv_spike.elf
 	
 	
 	
