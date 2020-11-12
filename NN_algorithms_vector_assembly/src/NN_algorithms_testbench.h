@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include "NN_operations/vector_operations.h"
 #include "NN_operations/convolution_operations.h"
 #include "NN_operations/matrix_operations.h"
 #include "NN_operations/pooling_operations.h"
