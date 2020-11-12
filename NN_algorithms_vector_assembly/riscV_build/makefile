@@ -1,8 +1,8 @@
 RV_COMPILER_OPTIONS = -Os -g -static -mabi=ilp32 -march=rv32imcv -Wall -pedantic 
-RV_LINKING_OPTIONS = ${RV_COMPILER_OPTIONS} -nostartfiles
-RV_LINKING_OPTIONS_SPIKE = ${RV_COMPILER_OPTIONS} -static
+RV_LINKING_OPTIONS = ${RV_COMPILER_OPTIONS} -nostartfiles  ${LIB_DIR}crtbegin.o
+RV_LINKING_OPTIONS_SPIKE = ${RV_COMPILER_OPTIONS} 
 
-SPIKE_SIM_FLAGS= --isa=RV32IMC
+SPIKE_SIM_FLAGS= --isa=RV32IMCV   --varch=vlen:32,elen:16,slen:32
 PK_DIR=/opt/riscv/riscv32-unknown-elf/bin
 
 LINKER_SCRIPT =  ../lib/link.ld
@@ -32,11 +32,9 @@ NN_algorithms_testbench-riscv.elf: $(OBJECTS)
 		 -L ${LIB_DIR} -lcv-verif -T ${LINKER_SCRIPT} $(OBJECTS)
 
 NN_algorithms_testbench-riscv_spike.elf: $(OBJECTS) 
-	${CC} ${RV_LINKING_OPTIONS_SPIKE} -o NN_algorithms_testbench-riscv.elf   \
-		 -L ${LIB_DIR} -lcv-verif -T ${LINKER_SCRIPT} $(OBJECTS)	
+	${CC} ${RV_LINKING_OPTIONS_SPIKE} -o NN_algorithms_testbench-riscv_spike.elf \
+		 -L ${LIB_DIR} -lcv-verif -T ${LINKER_SCRIPT}  $(OBJECTS)	
 		
-%.o : %.c
-	${CC} ${RV_COMPILER_OPTIONS}   -c -o $@ $< 
 
 src/%.o : ../src/%.c  object_DIR
 	${CC} ${RV_COMPILER_OPTIONS}  -c -o $@ $< 		
@@ -45,7 +43,7 @@ src/NN_operations/%.o :../src/NN_operations/%.c  object_DIR
 	${CC} ${RV_COMPILER_OPTIONS}   -c -o $@ $< 		
 
 src/NN_operations/%.o :../src/NN_operations/%.S  object_DIR
-	${CC} ${RV_COMPILER_OPTIONS}   -c -o $@ $< 		
+	${CC} ${RV_COMPILER_OPTIONS}  -c -o $@ $< 		
 
 
 object_DIR:
@@ -61,10 +59,10 @@ all:
 	make dir
 	make
 	make analyze_assembly
-	make run
+	make verilator
 	make spike
-.PHONY : run
-run: 
+.PHONY : verilator
+verilator: 
 	testbench_verilator "+firmware=./NN_algorithms_testbench-riscv.hex"
 
 .PHONY : clean
@@ -91,8 +89,8 @@ test:
 	
 .PHOMY : analyze_assembly
 analyze_assembly:
-	riscv32-unknown-elf-objdump NN_algorithms_testbench-riscv.elf  -d > assemblerContents.txt
-	riscv32-unknown-elf-objdump NN_algorithms_testbench-riscv.elf  -S > assemblerContentsIntermixSourceCode.txt
+	riscv32-unknown-elf-objdump NN_algorithms_testbench-riscv_spike.elf  -d > assemblerContents.txt
+	riscv32-unknown-elf-objdump NN_algorithms_testbench-riscv_spike.elf  -S > assemblerContentsIntermixSourceCode.txt
 
 .PHONY : spike
 spike: NN_algorithms_testbench-riscv_spike.elf
