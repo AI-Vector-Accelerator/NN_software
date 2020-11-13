@@ -27,11 +27,11 @@ OBJECTS = $(SOURCES:../%.c=%.o)  $(ASSEM_SOURCES:../%.S=%.o)
 NN_algorithms_testbench-riscv.hex: NN_algorithms_testbench-riscv.elf 
 	${OBJCOPY} -O verilog NN_algorithms_testbench-riscv.elf NN_algorithms_testbench-riscv.hex 
 
-NN_algorithms_testbench-riscv.elf: $(OBJECTS) 
+NN_algorithms_testbench-riscv.elf: $(OBJECTS) lib_build
 	${CC} ${RV_LINKING_OPTIONS} -o NN_algorithms_testbench-riscv.elf   \
 		 -L ${LIB_DIR} -lcv-verif -T ${LINKER_SCRIPT} $(OBJECTS)
 
-NN_algorithms_testbench-riscv_spike.elf: $(OBJECTS) 
+NN_algorithms_testbench-riscv_spike.elf: $(OBJECTS) lib_build
 	${CC} ${RV_LINKING_OPTIONS_SPIKE} -o NN_algorithms_testbench-riscv_spike.elf \
 		 -L ${LIB_DIR} -lcv-verif -T ${LINKER_SCRIPT}  $(OBJECTS)	
 		
@@ -48,23 +48,28 @@ src/NN_operations/%.o :../src/NN_operations/%.S  object_DIR
 
 object_DIR:
 	make dir
+
+lib_build:
+	make lib
 	
 .PHONY : dir
 dir:				
 	mkdir -p src 
 	mkdir -p src/NN_operations		
+	
+.PHONY : lib
+lib:
+	if [ ! -d  ${LIB_DIR} ]; then ../make_lib_riscv.sh; mv  lib $(LIB_DIR)  ; fi
 		
 .PHONY : all
 all:
 	make dir
+	make lib
 	make
-	make analyze_assembly
 	make verilator
 	make spike
-.PHONY : verilator
-verilator: 
-	testbench_verilator "+firmware=./NN_algorithms_testbench-riscv.hex"
-
+	make analyze_assembly
+	
 .PHONY : clean
 clean:
 	rm -f NN_algorithms_testbench-riscv.hex NN_algorithms_testbench-riscv.elf NN_algorithms_testbench-riscv_spike.elf
@@ -76,6 +81,7 @@ full_clean:
 	make clean
 	rm -f memory_dump.bin assemblerContentsIntermixSourceCode.txt assemblerContents.txt
 	rm -r -f src
+	rm -r $(LIB_DIR)
 
 .PHONY : test
 test:
@@ -92,6 +98,10 @@ analyze_assembly:
 	riscv32-unknown-elf-objdump NN_algorithms_testbench-riscv_spike.elf  -d > assemblerContents.txt
 	riscv32-unknown-elf-objdump NN_algorithms_testbench-riscv_spike.elf  -S > assemblerContentsIntermixSourceCode.txt
 
+.PHONY : verilator
+verilator: NN_algorithms_testbench-riscv.hex
+	testbench_verilator "+firmware=./NN_algorithms_testbench-riscv.hex"
+	
 .PHONY : spike
 spike: NN_algorithms_testbench-riscv_spike.elf
 	spike  $(SPIKE_SIM_FLAGS) $(flags) $(PK_DIR)/pk NN_algorithms_testbench-riscv_spike.elf
