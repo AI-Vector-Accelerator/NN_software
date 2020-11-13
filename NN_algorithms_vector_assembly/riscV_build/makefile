@@ -2,7 +2,7 @@ RV_COMPILER_OPTIONS = -Os -g -static -mabi=ilp32 -march=rv32imcv -Wall -pedantic
 RV_LINKING_OPTIONS = ${RV_COMPILER_OPTIONS} -nostartfiles  ${LIB_DIR}crtbegin.o
 RV_LINKING_OPTIONS_SPIKE = ${RV_COMPILER_OPTIONS} 
 
-SPIKE_SIM_FLAGS= --isa=RV32IMCV   --varch=vlen:32,elen:16,slen:32
+SPIKE_SIM_FLAGS= --isa=RV32IMCV   # --varch=vlen:32,elen:16,slen:32
 PK_DIR=/opt/riscv/riscv32-unknown-elf/bin
 
 LINKER_SCRIPT =  ../lib/link.ld
@@ -66,7 +66,7 @@ all:
 	make dir
 	make lib
 	make
-	make verilator
+	# make verilator
 	make spike
 	make analyze_assembly
 	
@@ -93,7 +93,7 @@ test:
 	@echo $(HEADER_DIR)
 	
 	
-.PHOMY : analyze_assembly
+.PHONY : analyze_assembly
 analyze_assembly:
 	riscv32-unknown-elf-objdump NN_algorithms_testbench-riscv_spike.elf  -d > assemblerContents.txt
 	riscv32-unknown-elf-objdump NN_algorithms_testbench-riscv_spike.elf  -S > assemblerContentsIntermixSourceCode.txt
