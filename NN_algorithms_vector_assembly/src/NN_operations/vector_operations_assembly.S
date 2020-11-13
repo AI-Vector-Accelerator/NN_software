@@ -51,6 +51,7 @@ vect_mult:
  
 vect_addReduction:	#vect_addReduction(unsigned int N, const int8_t *vec1, int16_t *scalarOut)
 	.globl   vect_addReduction
+	vsetvli t0, a0, e8      	# Set vectors to be of 8 bits
 	vmv.v.i v0, 0					# set temp vector to 0
 loop_vect_addReduction:
 	vsetvli t0, a0, e8      		# Set vectors to be of 8 bits
@@ -72,6 +73,7 @@ vect_maxReduction:	#vect_maxReduction(unsigned int N, const int8_t *vec1, int8_t
 	.globl   vect_maxReduction
 	# a0=N, a1=*vec1, a2=*scalarOut
 	# v1=vec1, v2=scalarOut
+	vsetvli t0, a0, e8      	# Set vectors to be of 8 bits
 	li t1, MIN_INT8_T			#copy min value into register
 	vmv.v.x v2, t1				#copy register into temp vec
 loop_vect_maxReduction:
@@ -143,6 +145,7 @@ vect_ReLu:
 
 vect_ReLu6: vsetvli t0, a0, e8 # Set vector length based on 8-bit vectors
 	.globl   vect_ReLu6
+	vsetvli t0, a0, e8      	# Set vectors to be of 8 bits
 	vle.v v1, (a1) # Get first vector 
       sub a0, a0, t0 # Decrement number done 
       slli t0, t0, 2 # Multiply number done by 4 bytes 

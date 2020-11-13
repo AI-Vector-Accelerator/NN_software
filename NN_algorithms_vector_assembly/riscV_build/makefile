@@ -2,7 +2,7 @@ RV_COMPILER_OPTIONS = -Os -g -static -mabi=ilp32 -march=rv32imcv -Wall -pedantic
 RV_LINKING_OPTIONS = ${RV_COMPILER_OPTIONS} -nostartfiles  ${LIB_DIR}crtbegin.o
 RV_LINKING_OPTIONS_SPIKE = ${RV_COMPILER_OPTIONS} 
 
-SPIKE_SIM_FLAGS= --isa=RV32IMCV   # --varch=vlen:32,elen:32,slen:32
+SPIKE_SIM_FLAGS= --isa=RV32IMCV    --varch=vlen:32,elen:32,slen:32
 PK_DIR=/opt/riscv/riscv32-unknown-elf/bin
 
 LINKER_SCRIPT =  ../lib/link.ld
