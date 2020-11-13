@@ -3,9 +3,7 @@ export RISCV_LINK_LIB=${PWD}/lib
 
 mkdir $RISCV_LINK_LIB 
 
-cd $CV32SIM
-cd ../../
-cd bsp
+cd /opt/core-v-verif/cv32/bsp
 make
 cp libcv-verif.a $RISCV_LINK_LIB/libcv-verif.a
 cp link.ld $RISCV_LINK_LIB/link.ld

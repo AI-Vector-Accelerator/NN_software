@@ -5,12 +5,13 @@
 int main(void) {
 
 	testbench_vectorAdd();
-	testbench_vectorMult();
+	//testbench_vectorMult();
+	testbench_addReduction();
 	testbench_dotProduct();
 	testbench_vectorReLu();
 	testbench_vectorReLu6();
 
-	/*testbench_matrix_mult_d8();
+	testbench_matrix_mult_d8();
 	testbench_matrix_add_d8();
 	testbench_max_pool_d8();
 	testbench_avg_pool_d8();
@@ -21,14 +22,14 @@ int main(void) {
 	testbench_conv2D_multiOutputChannel();
 	testbench_conv2D_depthwise();
 	testbench_conv2D_depthwiseSeparable();
-	testbench_conv2D_depthwiseSeparable_multiOutputChannel();*/
+	testbench_conv2D_depthwiseSeparable_multiOutputChannel();
 
 	return EXIT_SUCCESS;
 }
 
 
 void testbench_dotProduct(){
-	const uint32_t N=5;
+	const uint32_t N=6;
 	int8_t A[N],B[N];
 	int32_t output;
 	printf("\ntestbench_dotProduct\n\n");
@@ -67,6 +68,7 @@ void testbench_vectorMult(){
 	int8_t A[N],B[N],C[N];
 	printf("\ntestbench_vecMult\n\n");
 	fillVector(N,A,2);
+	randFillVector(N,A);
 	randFillVector(N,B);
 	printf("Vector A:");
 	printVector(N,A);
@@ -78,6 +80,20 @@ void testbench_vectorMult(){
 	printf("\nOutput:\n");
 	printVector(N,C);
 	printf("\n\n");
+}
+
+void testbench_addReduction(){
+	const uint32_t N=8;
+	int8_t A[N];
+	int16_t output;
+	printf("\ntestbench_addReduction\n\n");
+	randFillVector(N,A);
+	printf("Vector A:");
+	printVector(N,A);
+	
+	vect_addReduction(N,A, &output);
+
+	printf("\nOutput: %d\n\n\n",(int)output);
 }
 
 void testbench_vectorReLu(){

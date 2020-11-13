@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include "NN_operations/vector_operations.h"
 #include "NN_operations/convolution_operations.h"
 #include "NN_operations/matrix_operations.h"
 #include "NN_operations/pooling_operations.h"
@@ -28,6 +29,7 @@ void testbench_avg_pool_d8();
 
 void testbench_dotProduct();
 void testbench_vectorAdd();
+void testbench_addReduction();
 void testbench_vectorReLu();
 void testbench_vectorReLu6();
 void testbench_vectorMult();
