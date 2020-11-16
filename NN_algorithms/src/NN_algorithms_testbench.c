@@ -1,34 +1,64 @@
 #include "NN_algorithms_testbench.h"
 
-
 //matrix width goes across ->, height goes down
-int main(void) {
+int main(void){
+	unsigned long startCycles, endCycles, cyclesToRun, Cycles_NN_operations=0;
+	unsigned long startTime, endTime, timeToRun, time_NN_operations=0;
+	
+	startCycles=getCycles();
+	startTime=getRealTime();
 
-	testbench_vectorAdd();
-	//testbench_vectorMult();
-	testbench_addReduction();
-	testbench_dotProduct();
-	testbench_vectorReLu();
-	testbench_vectorReLu6();
+	testbench_vectorAdd(&Cycles_NN_operations,&time_NN_operations);
+	//testbench_vectorMult(&Cycles_NN_operations,&time_NN_operations);
+	testbench_addReduction(&Cycles_NN_operations,&time_NN_operations);
+	testbench_dotProduct(&Cycles_NN_operations,&time_NN_operations);
+	testbench_vectorReLu(&Cycles_NN_operations,&time_NN_operations);
+	testbench_vectorReLu6(&Cycles_NN_operations,&time_NN_operations);
 
-	testbench_matrix_mult_d8();
-	testbench_matrix_add_d8();
-	testbench_max_pool_d8();
-	testbench_avg_pool_d8();
+	testbench_matrix_mult_d8(&Cycles_NN_operations,&time_NN_operations);
+	testbench_matrix_add_d8(&Cycles_NN_operations,&time_NN_operations);
+	testbench_max_pool_d8(&Cycles_NN_operations,&time_NN_operations);
+	testbench_avg_pool_d8(&Cycles_NN_operations,&time_NN_operations);
 
-	testbench_conv2D_multiInputChannel();
-	testbench_conv2D();
-	testbench_conv2D_multiIOChannel();
-	testbench_conv2D_multiOutputChannel();
-	testbench_conv2D_depthwise();
-	testbench_conv2D_depthwiseSeparable();
-	testbench_conv2D_depthwiseSeparable_multiOutputChannel();
-
+	testbench_conv2D_multiInputChannel(&Cycles_NN_operations,&time_NN_operations);
+	testbench_conv2D(&Cycles_NN_operations,&time_NN_operations);
+	testbench_conv2D_multiIOChannel(&Cycles_NN_operations,&time_NN_operations);
+	testbench_conv2D_multiOutputChannel(&Cycles_NN_operations,&time_NN_operations);
+	testbench_conv2D_depthwise(&Cycles_NN_operations,&time_NN_operations);
+	testbench_conv2D_depthwiseSeparable(&Cycles_NN_operations,&time_NN_operations);
+	testbench_conv2D_depthwiseSeparable_multiOutputChannel(&Cycles_NN_operations,&time_NN_operations);
+	
+	endCycles=getCycles();
+	endTime=getRealTime();
+	
+	cyclesToRun=endCycles-startCycles;
+	timeToRun=endTime-startTime;
+	
+	printf("\n\n");
+	printf(" Number of cycles to run just NN_operations: %lu\n",Cycles_NN_operations);
+	printf(" Time to run just NN_operations: %lu\n",time_NN_operations);
+	printf("\n");
+	printf(" Total Number of cycles to run testbenchs: %lu\n",cyclesToRun);
+	printf(" Total Time to run testbenchs: %lu\n",timeToRun);
 	return EXIT_SUCCESS;
 }
 
+unsigned long getCycles(void){
+	unsigned long numberOfCyclesExecuted;
+	asm volatile ("rdcycle %0" : "=r"(numberOfCyclesExecuted));
+	return numberOfCyclesExecuted;
+}
 
-void testbench_dotProduct(){
+unsigned long getRealTime(void){
+	unsigned long realTime;
+	asm volatile ("rdtime %0" : "=r"(realTime));
+	return realTime;
+}
+
+void testbench_dotProduct(unsigned long *Cycles_NN_operations,unsigned long *time_NN_operations){
+	unsigned long startCycles, endCycles;
+	unsigned long startTime, endTime;
+		
 	const uint32_t N=6;
 	int8_t A[N],B[N];
 	int32_t output;
@@ -40,12 +70,21 @@ void testbench_dotProduct(){
 	printf("Vector B:");
 	printVector(N,B);
 
+	startCycles=getCycles();
+	startTime=getRealTime();
 	vect_dotProduct(N,A,B, &output);
-
+	endCycles=getCycles();
+	endTime=getRealTime();
+	
 	printf("\nOutput: %d\n\n\n",(int)output);
+	*Cycles_NN_operations +=(endCycles-startCycles);
+	*time_NN_operations +=(endTime-startTime);
 }
 
-void testbench_vectorAdd(){
+void testbench_vectorAdd(unsigned long *Cycles_NN_operations,unsigned long *time_NN_operations){
+	unsigned long startCycles, endCycles;
+	unsigned long startTime, endTime;
+	
 	const uint32_t N=10;
 	int8_t A[N],B[N],C[N];
 	printf("\ntestbench_vecAdd\n\n");
@@ -56,14 +95,23 @@ void testbench_vectorAdd(){
 	printf("Vector B:");
 	printVector(N,B);
 
+	startCycles=getCycles();
+	startTime=getRealTime();
 	vect_add(N,A,B, C);
-
+	endCycles=getCycles();
+	endTime=getRealTime();
+	
 	printf("\nOutput:\n");
 	printVector(N,C);
 	printf("\n\n");
+	*Cycles_NN_operations +=(endCycles-startCycles);
+	*time_NN_operations +=(endTime-startTime);
 }
 
-void testbench_vectorMult(){
+void testbench_vectorMult(unsigned long *Cycles_NN_operations,unsigned long *time_NN_operations){
+	unsigned long startCycles, endCycles;
+	unsigned long startTime, endTime;
+
 	const uint32_t N=10;
 	int8_t A[N],B[N],C[N];
 	printf("\ntestbench_vecMult\n\n");
@@ -75,14 +123,23 @@ void testbench_vectorMult(){
 	printf("Vector B:");
 	printVector(N,B);
 
+	startCycles=getCycles();
+	startTime=getRealTime();
 	vect_mult(N,A,B, C);
-
+	endCycles=getCycles();
+	endTime=getRealTime();
+	
 	printf("\nOutput:\n");
 	printVector(N,C);
 	printf("\n\n");
+	*Cycles_NN_operations +=(endCycles-startCycles);
+	*time_NN_operations +=(endTime-startTime);
 }
 
-void testbench_addReduction(){
+void testbench_addReduction(unsigned long *Cycles_NN_operations,unsigned long *time_NN_operations){
+	unsigned long startCycles, endCycles;
+	unsigned long startTime, endTime;
+
 	const uint32_t N=8;
 	int8_t A[N];
 	int16_t output;
@@ -90,13 +147,22 @@ void testbench_addReduction(){
 	randFillVector(N,A);
 	printf("Vector A:");
 	printVector(N,A);
-	
-	vect_addReduction(N,A, &output);
 
+	startCycles=getCycles();
+	startTime=getRealTime();	
+	vect_addReduction(N,A, &output);
+	endCycles=getCycles();
+	endTime=getRealTime();
+	
 	printf("\nOutput: %d\n\n\n",(int)output);
+	*Cycles_NN_operations +=(endCycles-startCycles);
+	*time_NN_operations +=(endTime-startTime);
 }
 
-void testbench_vectorReLu(){
+void testbench_vectorReLu(unsigned long *Cycles_NN_operations,unsigned long *time_NN_operations){
+	unsigned long startCycles, endCycles;
+	unsigned long startTime, endTime;
+
 	const uint32_t N=20;
 	int8_t A[N],C[N];
 	printf("\ntestbench_ReLu\n\n");
@@ -104,14 +170,23 @@ void testbench_vectorReLu(){
 	printf("Vector A:");
 	printVector(N,A);
 
+	startCycles=getCycles();
+	startTime=getRealTime();
 	vect_ReLu(N,A, C);
-
+	endCycles=getCycles();
+	endTime=getRealTime();
+	
 	printf("\nOutput:\n");
 	printVector(N,C);
 	printf("\n\n");
+	*Cycles_NN_operations +=(endCycles-startCycles);
+	*time_NN_operations +=(endTime-startTime);
 }
 
-void testbench_vectorReLu6(){
+void testbench_vectorReLu6(unsigned long *Cycles_NN_operations,unsigned long *time_NN_operations){
+	unsigned long startCycles, endCycles;
+	unsigned long startTime, endTime;
+
 	const uint32_t N=20;
 	int8_t A[N],C[N];
 	printf("\ntestbench_ReLu6\n\n");
@@ -119,15 +194,24 @@ void testbench_vectorReLu6(){
 	printf("Vector A:");
 	printVector(N,A);
 
+	startCycles=getCycles();
+	startTime=getRealTime();
 	vect_ReLu6(N,A, C);
-
+	endCycles=getCycles();
+	endTime=getRealTime();
+	
 	printf("\nOutput:\n");
 	printVector(N,C);
 	printf("\n\n");
+	*Cycles_NN_operations +=(endCycles-startCycles);
+	*time_NN_operations +=(endTime-startTime);
 }
 
 
-void testbench_matrix_add_d8(){
+void testbench_matrix_add_d8(unsigned long *Cycles_NN_operations,unsigned long *time_NN_operations){
+	unsigned long startCycles, endCycles;
+	unsigned long startTime, endTime;
+
 	const uint32_t height=3,width=3;
 	int8_t MatA[height][width], MatB[height][width],MatC[height][width];
 
@@ -141,25 +225,27 @@ void testbench_matrix_add_d8(){
 	printf("Matrix B:\n");
 	printMatrix2D(height,width,MatB);
 
+	startCycles=getCycles();
+	startTime=getRealTime();
 	matrix_add_d8(height,width,MatA,MatB,MatC);
-
+	endCycles=getCycles();
+	endTime=getRealTime();
+	
 	printf("Output:\n");
 	printMatrix2D(height,width,MatC);
 	printf("\n");
+	*Cycles_NN_operations +=(endCycles-startCycles);
+	*time_NN_operations +=(endTime-startTime);
 }
 
-void testbench_matrix_mult_d8(){
-	const uint32_t height=3,width=3;
+void testbench_matrix_mult_d8(unsigned long *Cycles_NN_operations,unsigned long *time_NN_operations){
+	unsigned long startCycles, endCycles;
+	unsigned long startTime, endTime;
+
+	const uint32_t height=15,width=15;
 	int8_t MatA[height][width], MatB[height][width],MatC[height][width];
 
 	printf("\ntestbench_matrix_mult_d8  \n");
-	/*fillVector(width,MatA[0],-1);
-	fillVector(width,MatA[1],2);
-	fillVector(width,MatA[2],7);
-
-	fillVector(width,MatB[0],4);
-	fillVector(width,MatB[1],0);
-	fillVector(width,MatB[2],2);*/
 	randFillMatrix2D(height,width,MatA);
 	randFillMatrix2D(height,width,MatB);
 
@@ -168,14 +254,23 @@ void testbench_matrix_mult_d8(){
 	printf("Matrix B:\n");
 	printMatrix2D(height,width,MatB);
 
+	startCycles=getCycles();
+	startTime=getRealTime();
 	matrix_mult_d8(height,width,height,width,MatA,MatB,MatC);
-
+	endCycles=getCycles();
+	endTime=getRealTime();
+	
 	printf("Output:\n");
 	printMatrix2D(height,width,MatC);
 	printf("\n");
+	*Cycles_NN_operations +=(endCycles-startCycles);
+	*time_NN_operations +=(endTime-startTime);
 }
 
-void testbench_max_pool_d8(){
+void testbench_max_pool_d8(unsigned long *Cycles_NN_operations,unsigned long *time_NN_operations){
+	unsigned long startCycles, endCycles;
+	unsigned long startTime, endTime;
+
 	const uint32_t height=10,width=10,stride=2,filterHeight=2,filterWidth=2;
 	int8_t MatA[height][width], MatC[height/filterHeight][width/filterWidth];
 
@@ -185,14 +280,23 @@ void testbench_max_pool_d8(){
 	printf("\nMatrix A, filter is 2x2:\n");
 	printMatrix2D(height,width,MatA);
 
+	startCycles=getCycles();
+	startTime=getRealTime();
 	max_pool_d8(height,width,MatA,filterHeight,filterWidth,stride,MatC);
-
+	endCycles=getCycles();
+	endTime=getRealTime();
+	
 	printf("Output:\n");
 	printMatrix2D(height/filterHeight,width/filterWidth,MatC);
 	printf("\n");
+	*Cycles_NN_operations +=(endCycles-startCycles);
+	*time_NN_operations +=(endTime-startTime);
 }
 
-void testbench_avg_pool_d8(){
+void testbench_avg_pool_d8(unsigned long *Cycles_NN_operations,unsigned long *time_NN_operations){
+	unsigned long startCycles, endCycles;
+	unsigned long startTime, endTime;
+
 	const uint32_t height=10,width=10,stride=2,filterHeight=2,filterWidth=2;
 	int8_t MatA[height][width], MatC[height/filterHeight][width/filterWidth];
 
@@ -202,15 +306,24 @@ void testbench_avg_pool_d8(){
 	printf("\nMatrix A, filter is 2x2:\n");
 	printMatrix2D(height,width,MatA);
 
+	startCycles=getCycles();
+	startTime=getRealTime();
 	avg_pool_d8(height,width,MatA,filterHeight,filterWidth,stride,MatC);
-
+	endCycles=getCycles();
+	endTime=getRealTime();
+	
 	printf("Output:\n");
 	printMatrix2D(height/filterHeight,width/filterWidth,MatC);
 	printf("\n");
+	*Cycles_NN_operations +=(endCycles-startCycles);
+	*time_NN_operations +=(endTime-startTime);
 }
 
 
-void testbench_conv2D_multiInputChannel(){
+void testbench_conv2D_multiInputChannel(unsigned long *Cycles_NN_operations,unsigned long *time_NN_operations){
+	unsigned long startCycles, endCycles;
+	unsigned long startTime, endTime;
+
 	const uint32_t height=10,width=10,channel=3, kernel_height=3, kernel_width=3, stride=1;
 	uint32_t outputDataHeight, outputDataWidth;
 	getOutputDimensionsConv2D(kernel_height,kernel_width, height, width, stride, &outputDataHeight, &outputDataWidth);
@@ -230,14 +343,23 @@ void testbench_conv2D_multiInputChannel(){
 	printf("\n\nkernel:\n");
 	printMatrix3D(kernel_height,kernel_width,channel,kernel);
 
+	startCycles=getCycles();
+	startTime=getRealTime();
 	conv2D_multiInputChannel(height,width,channel,kernel_height,kernel_width,stride,outputDataHeight, outputDataWidth,data,kernel,output);
-
+	endCycles=getCycles();
+	endTime=getRealTime();
+	
 	printf("\n\nOutput:\n");
 	printMatrix2D(outputDataHeight,outputDataWidth,output);
 	printf("\n");
+	*Cycles_NN_operations +=(endCycles-startCycles);
+	*time_NN_operations +=(endTime-startTime);
 }
 
-void testbench_conv2D_multiIOChannel(){
+void testbench_conv2D_multiIOChannel(unsigned long *Cycles_NN_operations,unsigned long *time_NN_operations){
+	unsigned long startCycles, endCycles;
+	unsigned long startTime, endTime;
+
 	const uint32_t batch=3, height=6,width=6,channel=3, kernel_height=4, kernel_width=4, stride=1;
 	uint32_t outputDataHeight, outputDataWidth;
 	getOutputDimensionsConv2D(kernel_height,kernel_width, height, width, stride, &outputDataHeight, &outputDataWidth);
@@ -255,14 +377,23 @@ void testbench_conv2D_multiIOChannel(){
 	printf("\n\nkernel:\n");
 	printMatrix4D(batch,kernel_height,kernel_width,channel,kernel);
 
+	startCycles=getCycles();
+	startTime=getRealTime();
 	conv2D_multiIOChannel(batch,height,width,channel,kernel_height,kernel_width,stride,outputDataHeight, outputDataWidth,data,kernel,output);
-
+	endCycles=getCycles();
+	endTime=getRealTime();
+	
 	printf("\n\nOutput:   \n");
 	printMatrix3D(outputDataHeight,outputDataWidth,batch,output);
 	printf("\n");
+	*Cycles_NN_operations +=(endCycles-startCycles);
+	*time_NN_operations +=(endTime-startTime);
 }
 
-void testbench_conv2D(){
+void testbench_conv2D(unsigned long *Cycles_NN_operations,unsigned long *time_NN_operations){
+	unsigned long startCycles, endCycles;
+	unsigned long startTime, endTime;
+
 	const uint32_t height=9,width=9, kernel_height=3, kernel_width=3, stride=3;
 	uint32_t outputDataHeight, outputDataWidth;
 	getOutputDimensionsConv2D(kernel_height,kernel_width, height, width, stride, &outputDataHeight, &outputDataWidth);
@@ -280,14 +411,23 @@ void testbench_conv2D(){
 	printMatrix2D(kernel_height,kernel_width,kernel);
 	printf("Stride = %u\n",(int)stride);
 
+	startCycles=getCycles();
+	startTime=getRealTime();
 	conv2D(height,width,kernel_height,kernel_width,stride,outputDataHeight, outputDataWidth,data,kernel,output);
-
+	endCycles=getCycles();
+	endTime=getRealTime();
+	
 	printf("\n\nOutput:\n");
 	printMatrix2D(outputDataHeight,outputDataWidth,output);
 	printf("\n");
+	*Cycles_NN_operations +=(endCycles-startCycles);
+	*time_NN_operations +=(endTime-startTime);
 }
 
-void testbench_conv2D_multiOutputChannel(){
+void testbench_conv2D_multiOutputChannel(unsigned long *Cycles_NN_operations,unsigned long *time_NN_operations){
+	unsigned long startCycles, endCycles;
+	unsigned long startTime, endTime;
+	
 	const uint32_t batch=4, height=5,width=5, kernel_height=3, kernel_width=3, stride=1;
 	uint32_t outputDataHeight, outputDataWidth;
 	getOutputDimensionsConv2D(kernel_height,kernel_width, height, width, stride, &outputDataHeight, &outputDataWidth);
@@ -308,14 +448,23 @@ void testbench_conv2D_multiOutputChannel(){
 	printf("\n\nkernel:\n");
 	printMatrix3D(kernel_height,kernel_width,batch,kernel);
 
+	startCycles=getCycles();
+	startTime=getRealTime();
 	conv2D_multiOutputChannel(batch,height,width,kernel_height,kernel_width,stride,outputDataHeight, outputDataWidth,data,kernel,output);
-
+	endCycles=getCycles();
+	endTime=getRealTime();
+	
 	printf("\n\nOutput:\n");
 	printMatrix3D(outputDataHeight,outputDataWidth,batch,output);
 	printf("\n");
+	*Cycles_NN_operations +=(endCycles-startCycles);
+	*time_NN_operations +=(endTime-startTime);
 }
 
-void testbench_conv2D_depthwise(){
+void testbench_conv2D_depthwise(unsigned long *Cycles_NN_operations,unsigned long *time_NN_operations){
+	unsigned long startCycles, endCycles;
+	unsigned long startTime, endTime;
+
 	const uint32_t height=9,width=9,channel=3, kernel_height=3, kernel_width=3, stride=1;
 	uint32_t outputDataHeight, outputDataWidth;
 	getOutputDimensionsConv2D(kernel_height,kernel_width, height, width, stride, &outputDataHeight, &outputDataWidth);
@@ -335,14 +484,23 @@ void testbench_conv2D_depthwise(){
 	printf("\n\nkernel:\n");
 	printMatrix3D(kernel_height,kernel_width,channel,kernel);
 
+	startCycles=getCycles();
+	startTime=getRealTime();
 	conv2D_depthwise(height,width,channel,kernel_height,kernel_width,stride,outputDataHeight, outputDataWidth,data,kernel,output);
-
+	endCycles=getCycles();
+	endTime=getRealTime();
+	
 	printf("\n\nOutput:\n");
 	printMatrix3D(outputDataHeight,outputDataWidth,channel,output);
 	printf("\n");
+	*Cycles_NN_operations +=(endCycles-startCycles);
+	*time_NN_operations +=(endTime-startTime);
 }
 
-void testbench_conv2D_depthwiseSeparable(){
+void testbench_conv2D_depthwiseSeparable(unsigned long *Cycles_NN_operations,unsigned long *time_NN_operations){
+	unsigned long startCycles, endCycles;
+	unsigned long startTime, endTime;
+
 	const uint32_t height=9,width=9,channel=3, kernel_height=3, kernel_width=3, stride=1;
 	uint32_t outputDataHeight, outputDataWidth;
 	getOutputDimensionsConv2D(kernel_height,kernel_width, height, width, stride, &outputDataHeight, &outputDataWidth);
@@ -369,14 +527,23 @@ void testbench_conv2D_depthwiseSeparable(){
 	printf("\nkernelPointwise:\n");
 	printVector(channel,kernelPointwise);
 
+	startCycles=getCycles();
+	startTime=getRealTime();
 	conv2D_depthwiseSeparable(height,width,channel,kernel_height,kernel_width,stride,outputDataHeight, outputDataWidth,data,kernelDepthWise,kernelPointwise,output);
-
+	endCycles=getCycles();
+	endTime=getRealTime();
+	
 	printf("\n\nOutput:\n");
 	printMatrix2D(outputDataHeight,outputDataWidth,output);
 	printf("\n");
+	*Cycles_NN_operations +=(endCycles-startCycles);
+	*time_NN_operations +=(endTime-startTime);
 }
 
-void testbench_conv2D_depthwiseSeparable_multiOutputChannel(){
+void testbench_conv2D_depthwiseSeparable_multiOutputChannel(unsigned long *Cycles_NN_operations,unsigned long *time_NN_operations){
+	unsigned long startCycles, endCycles;
+	unsigned long startTime, endTime;
+
 	const uint32_t batch=10, height=6,width=6,channel=3, kernel_height=3, kernel_width=3, stride=1;
 	uint32_t outputDataHeight, outputDataWidth;
 	getOutputDimensionsConv2D(kernel_height,kernel_width, height, width, stride, &outputDataHeight, &outputDataWidth);
@@ -402,11 +569,17 @@ void testbench_conv2D_depthwiseSeparable_multiOutputChannel(){
 	printf("\nkernelPointwise:\n");
 	printMatrix2D(batch,channel,kernelPointwise);
 
+	startCycles=getCycles();
+	startTime=getRealTime();
 	conv2D_depthwiseSeparable_multiOutputChannel(batch,height,width,channel,kernel_height,kernel_width,stride,outputDataHeight, outputDataWidth,data,kernelDepthWise,kernelPointwise,output);
-
+	endCycles=getCycles();
+	endTime=getRealTime();
+	
 	printf("\n\nOutput:\n");
 	printMatrix3D(outputDataHeight,outputDataWidth,batch,output);
 	printf("\n");
+	*Cycles_NN_operations +=(endCycles-startCycles);
+	*time_NN_operations +=(endTime-startTime);
 }
 
 

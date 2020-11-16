@@ -14,25 +14,30 @@
 
 int main(void);
 
-void testbench_conv2D_multiInputChannel();
-void testbench_conv2D();
-void testbench_conv2D_multiOutputChannel();
-void testbench_conv2D_multiIOChannel();
-void testbench_conv2D_depthwise();
-void testbench_conv2D_depthwiseSeparable();
-void testbench_conv2D_depthwiseSeparable_multiOutputChannel();
+unsigned long getCycles(void);
+unsigned long getRealTime(void);
 
-void testbench_matrix_mult_d8();
-void testbench_matrix_add_d8();
-void testbench_max_pool_d8();
-void testbench_avg_pool_d8();
 
-void testbench_dotProduct();
-void testbench_vectorAdd();
-void testbench_addReduction();
-void testbench_vectorReLu();
-void testbench_vectorReLu6();
-void testbench_vectorMult();
+void testbench_dotProduct(unsigned long *Cycles_NN_operations,unsigned long *time_NN_operations);
+void testbench_vectorAdd(unsigned long *Cycles_NN_operations,unsigned long *time_NN_operations);
+void testbench_addReduction(unsigned long *Cycles_NN_operations,unsigned long *time_NN_operations);
+void testbench_vectorReLu(unsigned long *Cycles_NN_operations,unsigned long *time_NN_operations);
+void testbench_vectorReLu6(unsigned long *Cycles_NN_operations,unsigned long *time_NN_operations);
+void testbench_vectorMult(unsigned long *Cycles_NN_operations,unsigned long *time_NN_operations);
+
+void testbench_matrix_mult_d8(unsigned long *Cycles_NN_operations,unsigned long *time_NN_operations);
+void testbench_matrix_add_d8(unsigned long *Cycles_NN_operations,unsigned long *time_NN_operations);
+void testbench_max_pool_d8(unsigned long *Cycles_NN_operations,unsigned long *time_NN_operations);
+void testbench_avg_pool_d8(unsigned long *Cycles_NN_operations,unsigned long *time_NN_operations);
+
+void testbench_conv2D_multiInputChannel(unsigned long *Cycles_NN_operations,unsigned long *time_NN_operations);
+void testbench_conv2D(unsigned long *Cycles_NN_operations,unsigned long *time_NN_operations);
+void testbench_conv2D_multiOutputChannel(unsigned long *Cycles_NN_operations,unsigned long *time_NN_operations);
+void testbench_conv2D_multiIOChannel(unsigned long *Cycles_NN_operations,unsigned long *time_NN_operations);
+void testbench_conv2D_depthwise(unsigned long *Cycles_NN_operations,unsigned long *time_NN_operations);
+void testbench_conv2D_depthwiseSeparable(unsigned long *Cycles_NN_operations,unsigned long *time_NN_operations);
+void testbench_conv2D_depthwiseSeparable_multiOutputChannel(unsigned long *Cycles_NN_operations,unsigned long *time_NN_operations);
+
 
 
 #endif /* NN_ALGORITHMS_TESTBENCH_H_ */
