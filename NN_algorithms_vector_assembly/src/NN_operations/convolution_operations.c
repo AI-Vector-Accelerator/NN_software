@@ -11,8 +11,9 @@ void conv2D_multiInputChannel(
 
 	int32_t dotProduct;
 	uint32_t vecCounter;
-	uint32_t heightOffset=(kernel_height-kernel_height%2);
-	uint32_t widthOffset=(kernel_width-kernel_width%2);
+	int32_t heightOffset=(int)((height-outputDataHeight)/stride+1-kernel_height)/2;
+	int32_t widthOffset=(int)((width-outputDataWidth)/stride+1-kernel_width)/2;
+	int32_t tempHeightOffset, tempWidthOffset;
 	uint32_t dataHeightPosition,dataWeightPosition;
 	int8_t kernelVec[kernel_width*kernel_height*channel];
 	int8_t tempVec[kernel_width*kernel_height*channel];
@@ -21,13 +22,14 @@ void conv2D_multiInputChannel(
 	for(uint32_t heightCounter=0;heightCounter<outputDataHeight;heightCounter++){
 		for(uint32_t widthCounter=0;widthCounter<outputDataWidth;widthCounter++){
 			vecCounter=0;
+			tempHeightOffset=heightCounter*stride+heightOffset;
+			tempWidthOffset=widthCounter*stride+widthOffset;
 			for(uint32_t channelCounter=0;channelCounter<channel;channelCounter++){
-				for(int heightOffsetCounter=-(int)heightOffset/2;heightOffsetCounter<(int)(heightOffset/2 + kernel_height%2);heightOffsetCounter++){
-					for(int widthOffsetCounter=-(int)widthOffset/2;widthOffsetCounter<(int)(widthOffset/2 + kernel_width%2);widthOffsetCounter++){
-						dataHeightPosition=heightCounter+heightOffset/2+heightOffsetCounter;
-						dataWeightPosition=widthCounter+widthOffset/2+widthOffsetCounter;
-						dataHeightPosition*=stride;
-						dataWeightPosition*=stride;
+				for(int heightOffsetCounter=0;heightOffsetCounter<(int)(kernel_height);heightOffsetCounter++){
+					for(int widthOffsetCounter=0;widthOffsetCounter<(int)(kernel_width);widthOffsetCounter++){
+						dataHeightPosition=tempHeightOffset+heightOffsetCounter;
+						dataWeightPosition=tempWidthOffset+widthOffsetCounter;
+				
 						if( (dataHeightPosition<0 || dataHeightPosition>=height) || (dataWeightPosition<0 || dataWeightPosition>=width) ){
 							tempVec[vecCounter]=0;
 						}else{

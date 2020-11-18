@@ -59,7 +59,7 @@ void testbench_dotProduct(unsigned long *Cycles_NN_operations,unsigned long *tim
 	unsigned long startCycles, endCycles;
 	unsigned long startTime, endTime;
 		
-	const uint32_t N=6;
+	const uint32_t N=20;
 	int8_t A[N],B[N];
 	int32_t output;
 	printf("\ntestbench_dotProduct\n\n");
@@ -85,7 +85,7 @@ void testbench_vectorAdd(unsigned long *Cycles_NN_operations,unsigned long *time
 	unsigned long startCycles, endCycles;
 	unsigned long startTime, endTime;
 	
-	const uint32_t N=10;
+	const uint32_t N=25;
 	int8_t A[N],B[N],C[N];
 	printf("\ntestbench_vecAdd\n\n");
 	randFillVector(N,A);
@@ -112,7 +112,7 @@ void testbench_vectorMult(unsigned long *Cycles_NN_operations,unsigned long *tim
 	unsigned long startCycles, endCycles;
 	unsigned long startTime, endTime;
 
-	const uint32_t N=10;
+	const uint32_t N=25;
 	int8_t A[N],B[N],C[N];
 	printf("\ntestbench_vecMult\n\n");
 	fillVector(N,A,2);
@@ -140,7 +140,7 @@ void testbench_addReduction(unsigned long *Cycles_NN_operations,unsigned long *t
 	unsigned long startCycles, endCycles;
 	unsigned long startTime, endTime;
 
-	const uint32_t N=8;
+	const uint32_t N=25;
 	int8_t A[N];
 	int16_t output;
 	printf("\ntestbench_addReduction\n\n");
@@ -212,7 +212,7 @@ void testbench_matrix_add_d8(unsigned long *Cycles_NN_operations,unsigned long *
 	unsigned long startCycles, endCycles;
 	unsigned long startTime, endTime;
 
-	const uint32_t height=3,width=3;
+	const uint32_t height=21,width=21;
 	int8_t MatA[height][width], MatB[height][width],MatC[height][width];
 
 	printf("\ntestbench_matrix_add_d8  \n");
@@ -271,7 +271,7 @@ void testbench_max_pool_d8(unsigned long *Cycles_NN_operations,unsigned long *ti
 	unsigned long startCycles, endCycles;
 	unsigned long startTime, endTime;
 
-	const uint32_t height=10,width=10,stride=2,filterHeight=2,filterWidth=2;
+	const uint32_t height=16,width=16,stride=2,filterHeight=2,filterWidth=2;
 	int8_t MatA[height][width], MatC[height/filterHeight][width/filterWidth];
 
 	printf("\ntestbench_max_pool_d8  \n");
@@ -297,7 +297,7 @@ void testbench_avg_pool_d8(unsigned long *Cycles_NN_operations,unsigned long *ti
 	unsigned long startCycles, endCycles;
 	unsigned long startTime, endTime;
 
-	const uint32_t height=10,width=10,stride=2,filterHeight=2,filterWidth=2;
+	const uint32_t height=16,width=16,stride=2,filterHeight=2,filterWidth=2;
 	int8_t MatA[height][width], MatC[height/filterHeight][width/filterWidth];
 
 	printf("\ntestbench_avg_pool_d8  \n");
@@ -404,7 +404,9 @@ void testbench_conv2D(unsigned long *Cycles_NN_operations,unsigned long *time_NN
 	printf("\ntestbench_conv2D  \n");
 	randFillMatrix2D(height,width,data);
 	randFillMatrix2D(kernel_height,kernel_width,kernel);
-
+	fillMatrix2D(kernel_height,kernel_width,kernel,0);
+	kernel[1][1]=1;
+	
 	printf("\nData:\n");
 	printMatrix2D(height,width,data);
 	printf("\n\nkernel:\n");
