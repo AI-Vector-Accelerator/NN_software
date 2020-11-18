@@ -4,7 +4,9 @@
 int main(void){
 	unsigned long startCycles, endCycles, cyclesToRun, Cycles_NN_operations=0;
 	unsigned long startTime, endTime, timeToRun, time_NN_operations=0;
-	
+	unsigned long Cycles_vector, Cycles_matrix_Pooling, Cycles_conv2d;	
+	unsigned long time_vector, time_matrix_Pooling, time_conv2d;	
+		
 	startCycles=getCycles();
 	startTime=getRealTime();
 
@@ -14,19 +16,34 @@ int main(void){
 	testbench_dotProduct(&Cycles_NN_operations,&time_NN_operations);
 	testbench_vectorReLu(&Cycles_NN_operations,&time_NN_operations);
 	testbench_vectorReLu6(&Cycles_NN_operations,&time_NN_operations);
+		
+	Cycles_vector=Cycles_NN_operations;
+	time_vector=time_NN_operations;
+	Cycles_NN_operations=0;
+	time_NN_operations=0;
 
 	testbench_matrix_mult_d8(&Cycles_NN_operations,&time_NN_operations);
 	testbench_matrix_add_d8(&Cycles_NN_operations,&time_NN_operations);
 	testbench_max_pool_d8(&Cycles_NN_operations,&time_NN_operations);
 	testbench_avg_pool_d8(&Cycles_NN_operations,&time_NN_operations);
 
-	testbench_conv2D_multiInputChannel(&Cycles_NN_operations,&time_NN_operations);
+	Cycles_matrix_Pooling=Cycles_NN_operations;
+	time_matrix_Pooling=time_NN_operations;
+	Cycles_NN_operations=0;
+	time_NN_operations=0;	
+	
 	testbench_conv2D(&Cycles_NN_operations,&time_NN_operations);
+	testbench_conv2D_multiInputChannel(&Cycles_NN_operations,&time_NN_operations);
 	testbench_conv2D_multiIOChannel(&Cycles_NN_operations,&time_NN_operations);
 	testbench_conv2D_multiOutputChannel(&Cycles_NN_operations,&time_NN_operations);
 	testbench_conv2D_depthwise(&Cycles_NN_operations,&time_NN_operations);
 	testbench_conv2D_depthwiseSeparable(&Cycles_NN_operations,&time_NN_operations);
 	testbench_conv2D_depthwiseSeparable_multiOutputChannel(&Cycles_NN_operations,&time_NN_operations);
+	
+	Cycles_conv2d=Cycles_NN_operations;
+	time_conv2d=time_NN_operations;
+	Cycles_NN_operations=Cycles_vector+Cycles_matrix_Pooling+Cycles_conv2d;
+	time_NN_operations=time_vector+time_matrix_Pooling+time_conv2d;
 	
 	endCycles=getCycles();
 	endTime=getRealTime();
@@ -35,8 +52,17 @@ int main(void){
 	timeToRun=endTime-startTime;
 	
 	printf("\n\n");
-	printf(" Number of cycles to run just NN_operations: %lu\n",Cycles_NN_operations);
-	printf(" Time to run just NN_operations: %lu\n",time_NN_operations);
+	printf(" Number of cycles to run just vector_operations: %lu\n",Cycles_vector);
+	printf(" Time to run just vector_operations: %lu\n",time_vector);
+	printf("\n");
+	printf(" Number of cycles to run just matrix/pooling_operations: %lu\n",Cycles_matrix_Pooling);
+	printf(" Time to run just matrix/pooling_operations: %lu\n",time_matrix_Pooling);
+	printf("\n");
+	printf(" Number of cycles to run just conv2D_operations: %lu\n",Cycles_conv2d);
+	printf(" Time to run just conv2D_operations: %lu\n",time_conv2d);
+	printf("\n");
+	printf(" Number of cycles to run all NN_operations: %lu\n",Cycles_NN_operations);
+	printf(" Time to run all NN_operations: %lu\n",time_NN_operations);
 	printf("\n");
 	printf(" Total Number of cycles to run testbenchs: %lu\n",cyclesToRun);
 	printf(" Total Time to run testbenchs: %lu\n",timeToRun);
@@ -59,7 +85,7 @@ void testbench_dotProduct(unsigned long *Cycles_NN_operations,unsigned long *tim
 	unsigned long startCycles, endCycles;
 	unsigned long startTime, endTime;
 		
-	const uint32_t N=6;
+	const uint32_t N=20;
 	int8_t A[N],B[N];
 	int32_t output;
 	printf("\ntestbench_dotProduct\n\n");
@@ -85,7 +111,7 @@ void testbench_vectorAdd(unsigned long *Cycles_NN_operations,unsigned long *time
 	unsigned long startCycles, endCycles;
 	unsigned long startTime, endTime;
 	
-	const uint32_t N=10;
+	const uint32_t N=25;
 	int8_t A[N],B[N],C[N];
 	printf("\ntestbench_vecAdd\n\n");
 	randFillVector(N,A);
@@ -112,7 +138,7 @@ void testbench_vectorMult(unsigned long *Cycles_NN_operations,unsigned long *tim
 	unsigned long startCycles, endCycles;
 	unsigned long startTime, endTime;
 
-	const uint32_t N=10;
+	const uint32_t N=25;
 	int8_t A[N],B[N],C[N];
 	printf("\ntestbench_vecMult\n\n");
 	fillVector(N,A,2);
@@ -140,7 +166,7 @@ void testbench_addReduction(unsigned long *Cycles_NN_operations,unsigned long *t
 	unsigned long startCycles, endCycles;
 	unsigned long startTime, endTime;
 
-	const uint32_t N=8;
+	const uint32_t N=25;
 	int8_t A[N];
 	int16_t output;
 	printf("\ntestbench_addReduction\n\n");
@@ -212,7 +238,7 @@ void testbench_matrix_add_d8(unsigned long *Cycles_NN_operations,unsigned long *
 	unsigned long startCycles, endCycles;
 	unsigned long startTime, endTime;
 
-	const uint32_t height=3,width=3;
+	const uint32_t height=21,width=21;
 	int8_t MatA[height][width], MatB[height][width],MatC[height][width];
 
 	printf("\ntestbench_matrix_add_d8  \n");
@@ -271,7 +297,7 @@ void testbench_max_pool_d8(unsigned long *Cycles_NN_operations,unsigned long *ti
 	unsigned long startCycles, endCycles;
 	unsigned long startTime, endTime;
 
-	const uint32_t height=10,width=10,stride=2,filterHeight=2,filterWidth=2;
+	const uint32_t height=16,width=16,stride=2,filterHeight=2,filterWidth=2;
 	int8_t MatA[height][width], MatC[height/filterHeight][width/filterWidth];
 
 	printf("\ntestbench_max_pool_d8  \n");
@@ -297,7 +323,7 @@ void testbench_avg_pool_d8(unsigned long *Cycles_NN_operations,unsigned long *ti
 	unsigned long startCycles, endCycles;
 	unsigned long startTime, endTime;
 
-	const uint32_t height=10,width=10,stride=2,filterHeight=2,filterWidth=2;
+	const uint32_t height=16,width=16,stride=2,filterHeight=2,filterWidth=2;
 	int8_t MatA[height][width], MatC[height/filterHeight][width/filterWidth];
 
 	printf("\ntestbench_avg_pool_d8  \n");
@@ -404,7 +430,9 @@ void testbench_conv2D(unsigned long *Cycles_NN_operations,unsigned long *time_NN
 	printf("\ntestbench_conv2D  \n");
 	randFillMatrix2D(height,width,data);
 	randFillMatrix2D(kernel_height,kernel_width,kernel);
-
+	fillMatrix2D(kernel_height,kernel_width,kernel,0);
+	kernel[1][1]=1;
+	
 	printf("\nData:\n");
 	printMatrix2D(height,width,data);
 	printf("\n\nkernel:\n");
@@ -581,7 +609,4 @@ void testbench_conv2D_depthwiseSeparable_multiOutputChannel(unsigned long *Cycle
 	*Cycles_NN_operations +=(endCycles-startCycles);
 	*time_NN_operations +=(endTime-startTime);
 }
-
-
-
 
