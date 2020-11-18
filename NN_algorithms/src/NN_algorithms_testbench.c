@@ -4,7 +4,9 @@
 int main(void){
 	unsigned long startCycles, endCycles, cyclesToRun, Cycles_NN_operations=0;
 	unsigned long startTime, endTime, timeToRun, time_NN_operations=0;
-	
+	unsigned long Cycles_vector, Cycles_matrix_Pooling, Cycles_conv2d;	
+	unsigned long time_vector, time_matrix_Pooling, time_conv2d;	
+		
 	startCycles=getCycles();
 	startTime=getRealTime();
 
@@ -14,19 +16,34 @@ int main(void){
 	testbench_dotProduct(&Cycles_NN_operations,&time_NN_operations);
 	testbench_vectorReLu(&Cycles_NN_operations,&time_NN_operations);
 	testbench_vectorReLu6(&Cycles_NN_operations,&time_NN_operations);
+		
+	Cycles_vector=Cycles_NN_operations;
+	time_vector=time_NN_operations;
+	Cycles_NN_operations=0;
+	time_NN_operations=0;
 
 	testbench_matrix_mult_d8(&Cycles_NN_operations,&time_NN_operations);
 	testbench_matrix_add_d8(&Cycles_NN_operations,&time_NN_operations);
 	testbench_max_pool_d8(&Cycles_NN_operations,&time_NN_operations);
 	testbench_avg_pool_d8(&Cycles_NN_operations,&time_NN_operations);
 
-	testbench_conv2D_multiInputChannel(&Cycles_NN_operations,&time_NN_operations);
+	Cycles_matrix_Pooling=Cycles_NN_operations;
+	time_matrix_Pooling=time_NN_operations;
+	Cycles_NN_operations=0;
+	time_NN_operations=0;	
+	
 	testbench_conv2D(&Cycles_NN_operations,&time_NN_operations);
+	testbench_conv2D_multiInputChannel(&Cycles_NN_operations,&time_NN_operations);
 	testbench_conv2D_multiIOChannel(&Cycles_NN_operations,&time_NN_operations);
 	testbench_conv2D_multiOutputChannel(&Cycles_NN_operations,&time_NN_operations);
 	testbench_conv2D_depthwise(&Cycles_NN_operations,&time_NN_operations);
 	testbench_conv2D_depthwiseSeparable(&Cycles_NN_operations,&time_NN_operations);
 	testbench_conv2D_depthwiseSeparable_multiOutputChannel(&Cycles_NN_operations,&time_NN_operations);
+	
+	Cycles_conv2d=Cycles_NN_operations;
+	time_conv2d=time_NN_operations;
+	Cycles_NN_operations=Cycles_vector+Cycles_matrix_Pooling+Cycles_conv2d;
+	time_NN_operations=time_vector+time_matrix_Pooling+time_conv2d;
 	
 	endCycles=getCycles();
 	endTime=getRealTime();
@@ -35,8 +52,17 @@ int main(void){
 	timeToRun=endTime-startTime;
 	
 	printf("\n\n");
-	printf(" Number of cycles to run just NN_operations: %lu\n",Cycles_NN_operations);
-	printf(" Time to run just NN_operations: %lu\n",time_NN_operations);
+	printf(" Number of cycles to run just vector_operations: %lu\n",Cycles_vector);
+	printf(" Time to run just vector_operations: %lu\n",time_vector);
+	printf("\n");
+	printf(" Number of cycles to run just matrix/pooling_operations: %lu\n",Cycles_matrix_Pooling);
+	printf(" Time to run just matrix/pooling_operations: %lu\n",time_matrix_Pooling);
+	printf("\n");
+	printf(" Number of cycles to run just conv2D_operations: %lu\n",Cycles_conv2d);
+	printf(" Time to run just conv2D_operations: %lu\n",time_conv2d);
+	printf("\n");
+	printf(" Number of cycles to run all NN_operations: %lu\n",Cycles_NN_operations);
+	printf(" Time to run all NN_operations: %lu\n",time_NN_operations);
 	printf("\n");
 	printf(" Total Number of cycles to run testbenchs: %lu\n",cyclesToRun);
 	printf(" Total Time to run testbenchs: %lu\n",timeToRun);
@@ -583,7 +609,4 @@ void testbench_conv2D_depthwiseSeparable_multiOutputChannel(unsigned long *Cycle
 	*Cycles_NN_operations +=(endCycles-startCycles);
 	*time_NN_operations +=(endTime-startTime);
 }
-
-
-
 
