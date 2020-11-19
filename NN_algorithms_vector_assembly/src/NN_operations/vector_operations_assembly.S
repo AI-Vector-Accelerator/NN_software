@@ -113,6 +113,30 @@ loop_vect_dotProduct:
 	  ret								# return
 	  
 	  
+#vect_dotProduct_stride_vec2(unsigned int N, const int8_t *vec1, const int8_t *vec2, int32_t *scalarOut, uint32_t stride)
+# a0=N, a1=*vec1, a2=*vec2, a3=*scalarOut, a4=stride
+# v2=vec1, v4=vec2, v1=scalarOut, v8vec1 * vec2
+# Non-vector instructions are indented
+vect_dotProduct_stride_vec2:  
+    .globl   vect_dotProduct_stride_vec2
+	vsetvli t0, a0, e32, m1, d1      	# Set scalarOutput vector to be of 32 bits
+	vmv.v.i v1, 0						# set result vector to 0
+loop_vect_dotProduct_stride_vec2:
+	vsetvli t0, a0, e8, m2, d1      	# Set vectors to be of 8 bits, group 2 VecReg together for efficiency 
+	vle.v v2, (a1)          			# Get first vector
+	  add a1, a1, t0        			# Bump pointer
+	vlse.v v4, (a2), a4         		# Get second vector strided access
+      add a2, a2, t0        			# Bump pointer
+	vwmul.vv v8, v2, v4  				# multiply vectors(widening instruction)
+	vsetvli t0, a0, e16, m4    			# output now in 4 vector registers, update to 16-bit elements
+	vwredsum.vs v1, v8, v1				# reduction sum of v1 * v2
+	  sub a0, a0, t0        			# Decrement number of bytes done
+	  bnez a0, loop_vect_dotProduct_stride_vec2		# loop back for any more 
+	vsetvli t0, a0, e32, m1, d1		    # set vector to 32-bit element
+	vmv.x.s t1, v1						# move answer to register
+	  sw	t1, 0(a3)					# finished loop, store answer
+	  ret								# return
+	  
 	  
 
 

@@ -9,25 +9,28 @@ void conv2D_multiInputChannel(
 	int8_t kernel[channel][kernel_height][kernel_width],
 	int8_t output[outputDataHeight][outputDataWidth]){
 
-	int32_t dotProduct;
-	uint32_t vecCounter;
+	int32_t dotProduct=0,tempDotProduct;
+	//uint32_t vecCounter;
 	int32_t heightOffset=(int)((height-outputDataHeight)/stride+1-kernel_height)/2;
 	int32_t widthOffset=(int)((width-outputDataWidth)/stride+1-kernel_width)/2;
 	int32_t tempHeightOffset, tempWidthOffset;
 	uint32_t dataHeightPosition,dataWeightPosition;
-	int8_t kernelVec[kernel_width*kernel_height*channel];
-	int8_t tempVec[kernel_width*kernel_height*channel];
-	matrix3DtoVec(kernel_height,kernel_width,channel,kernel,kernelVec);
+	//int8_t kernelVec[kernel_width*kernel_height*channel];
+	//int8_t tempVec[kernel_width*kernel_height*channel];
+	//matrix3DtoVec(kernel_height,kernel_width,channel,kernel,kernelVec);
 
 	for(uint32_t heightCounter=0;heightCounter<outputDataHeight;heightCounter++){
 		for(uint32_t widthCounter=0;widthCounter<outputDataWidth;widthCounter++){
-			vecCounter=0;
+			//vecCounter=0;
+			dotProduct=0;
 			tempHeightOffset=heightCounter*stride+heightOffset;
 			tempWidthOffset=widthCounter*stride+widthOffset;
 			for(uint32_t channelCounter=0;channelCounter<channel;channelCounter++){
 				for(int heightOffsetCounter=0;heightOffsetCounter<(int)(kernel_height);heightOffsetCounter++){
-					for(int widthOffsetCounter=0;widthOffsetCounter<(int)(kernel_width);widthOffsetCounter++){
-						dataHeightPosition=tempHeightOffset+heightOffsetCounter;
+					dataHeightPosition=tempHeightOffset+heightOffsetCounter;
+					dataWeightPosition=tempWidthOffset;
+					/*for(int widthOffsetCounter=0;widthOffsetCounter<(int)(kernel_width);widthOffsetCounter++){
+						
 						dataWeightPosition=tempWidthOffset+widthOffsetCounter;
 				
 						if( (dataHeightPosition<0 || dataHeightPosition>=height) || (dataWeightPosition<0 || dataWeightPosition>=width) ){
@@ -36,10 +39,12 @@ void conv2D_multiInputChannel(
 							tempVec[vecCounter]=data[channelCounter][dataHeightPosition][dataWeightPosition];
 						}
 						vecCounter++;
-					}
+					}*/
+					vect_dotProduct(kernel_width,kernel[channelCounter][heightOffsetCounter],&data[channelCounter][dataHeightPosition][dataWeightPosition],&tempDotProduct);
+					dotProduct+=tempDotProduct;
 				}
 			}
-			vect_dotProduct(vecCounter,kernelVec,tempVec,&dotProduct);
+			//vect_dotProduct(vecCounter,kernelVec,tempVec,&dotProduct);
 			output[heightCounter][widthCounter] = saturate_32bit_to_8bit( dotProduct );
 		}
 	}

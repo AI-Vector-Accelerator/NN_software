@@ -58,6 +58,7 @@ void matrix_mult_d8 (   const uint32_t   SrcA_nRows,
         for(uint32_t j = 0; j < SrcB_nColumns; j++){
            for(uint32_t k = 0; k < SrcA_nColumns; k++){tempVec[k]=SrcB[k][j];}
            vect_dotProduct(SrcA_nColumns,SrcA[i],tempVec,&dotProduct);
+		  // vect_dotProduct_stride_vec2(SrcA_nColumns,SrcA[i],&SrcB[0][j],&dotProduct,SrcB_nColumns+1);
            Dst[i][j]=saturate_32bit_to_8bit( dotProduct );
         }
     }
