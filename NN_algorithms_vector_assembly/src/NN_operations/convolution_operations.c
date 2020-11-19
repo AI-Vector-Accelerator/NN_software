@@ -10,44 +10,69 @@ void conv2D_multiInputChannel(
 	int8_t output[outputDataHeight][outputDataWidth]){
 
 	int32_t dotProduct=0,tempDotProduct;
-	//uint32_t vecCounter;
 	int32_t heightOffset=(int)((height-outputDataHeight)/stride+1-kernel_height)/2;
 	int32_t widthOffset=(int)((width-outputDataWidth)/stride+1-kernel_width)/2;
-	int32_t tempHeightOffset, tempWidthOffset;
-	uint32_t dataHeightPosition,dataWeightPosition;
-	//int8_t kernelVec[kernel_width*kernel_height*channel];
-	//int8_t tempVec[kernel_width*kernel_height*channel];
-	//matrix3DtoVec(kernel_height,kernel_width,channel,kernel,kernelVec);
+	int32_t tempHeightOffset, tempWidthOffset,dataHeightPosition=0,dataWidthPosition=0;
+	uint32_t kernelWidthPosition=0,vecN=kernel_width;
+	uint8_t padding=0;
 
+	if(outputDataHeight>=height || outputDataWidth>=width){padding=1;}
+	
+	if(padding==0){
+		
 	for(uint32_t heightCounter=0;heightCounter<outputDataHeight;heightCounter++){
 		for(uint32_t widthCounter=0;widthCounter<outputDataWidth;widthCounter++){
-			//vecCounter=0;
 			dotProduct=0;
 			tempHeightOffset=heightCounter*stride+heightOffset;
 			tempWidthOffset=widthCounter*stride+widthOffset;
 			for(uint32_t channelCounter=0;channelCounter<channel;channelCounter++){
-				for(int heightOffsetCounter=0;heightOffsetCounter<(int)(kernel_height);heightOffsetCounter++){
+				for(uint32_t heightOffsetCounter=0;heightOffsetCounter<kernel_height;heightOffsetCounter++){
 					dataHeightPosition=tempHeightOffset+heightOffsetCounter;
-					dataWeightPosition=tempWidthOffset;
-					/*for(int widthOffsetCounter=0;widthOffsetCounter<(int)(kernel_width);widthOffsetCounter++){
-						
-						dataWeightPosition=tempWidthOffset+widthOffsetCounter;
-				
-						if( (dataHeightPosition<0 || dataHeightPosition>=height) || (dataWeightPosition<0 || dataWeightPosition>=width) ){
-							tempVec[vecCounter]=0;
-						}else{
-							tempVec[vecCounter]=data[channelCounter][dataHeightPosition][dataWeightPosition];
-						}
-						vecCounter++;
-					}*/
-					vect_dotProduct(kernel_width,kernel[channelCounter][heightOffsetCounter],&data[channelCounter][dataHeightPosition][dataWeightPosition],&tempDotProduct);
+					dataWidthPosition=tempWidthOffset;
+					vect_dotProduct(vecN,&kernel[channelCounter][heightOffsetCounter][kernelWidthPosition],&data[channelCounter][(uint32_t)dataHeightPosition][(uint32_t)dataWidthPosition],&tempDotProduct);
 					dotProduct+=tempDotProduct;
 				}
-			}
-			//vect_dotProduct(vecCounter,kernelVec,tempVec,&dotProduct);
-			output[heightCounter][widthCounter] = saturate_32bit_to_8bit( dotProduct );
+			}		
+			output[heightCounter][widthCounter] = saturate_32bit_to_8bit( dotProduct );	
 		}
 	}
+	
+	}else{
+	
+	for(uint32_t heightCounter=0;heightCounter<outputDataHeight;heightCounter++){
+		for(uint32_t widthCounter=0;widthCounter<outputDataWidth;widthCounter++){
+			dotProduct=0;
+			tempHeightOffset=heightCounter*stride+heightOffset;
+			tempWidthOffset=widthCounter*stride+widthOffset;
+			for(uint32_t channelCounter=0;channelCounter<channel;channelCounter++){
+				for(uint32_t heightOffsetCounter=0;heightOffsetCounter<kernel_height;heightOffsetCounter++){
+					dataHeightPosition=tempHeightOffset+heightOffsetCounter;
+					dataWidthPosition=tempWidthOffset;
+					if(dataHeightPosition<0 || dataHeightPosition>=height){continue;} 
+					if(dataWidthPosition<0){
+						vecN=kernel_width+dataWidthPosition;
+						kernelWidthPosition=(uint32_t)-dataWidthPosition;
+						dataWidthPosition=0;
+					}else if((dataWidthPosition+kernel_width-1)>width){
+						vecN=kernel_width-(dataWidthPosition-width);
+						kernelWidthPosition=0;
+					}else{
+						vecN=kernel_width;
+						kernelWidthPosition=0;
+					}
+					vect_dotProduct(vecN,&kernel[channelCounter][heightOffsetCounter][kernelWidthPosition],&data[channelCounter][(uint32_t)dataHeightPosition][(uint32_t)dataWidthPosition],&tempDotProduct);
+					dotProduct+=tempDotProduct;
+				}
+			}		
+			output[heightCounter][widthCounter] = saturate_32bit_to_8bit( dotProduct );	
+		}
+	}
+				
+	}			
+			/*if(kernel_width==1 && kernel_height==1){
+				vect_dotProduct_stride_vec2(vecN,(int8_t (*))kernel,&data[0][heightCounter][widthCounter],&tempDotProduct,height*width);
+				dotProduct+=tempDotProduct;
+			}else */
 }
 
 void conv2D_multiIOChannel(
