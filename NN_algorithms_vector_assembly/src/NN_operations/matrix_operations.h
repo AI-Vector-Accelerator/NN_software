@@ -1,32 +1,10 @@
-/*
- *****************************************************************************
- * @file        matrix_functions.h
- * @brief       Header for matrix_functions.c
- * 
- *****************************************************************************
- * @author      Aaryaman
- *
- *****************************************************************************
- * 
- */
-
-
 #ifndef MATRIX_FUNCTIONS_H
 #define MATRIX_FUNCTIONS_H
 
-//-------- Includes ----------------------------------------------------------//
 
 #include <stdint.h>
 #include "vector_operations.h"
-//-------- Defines -----------------------------------------------------------//
 
-//-------- Constants & enums -------------------------------------------------//
-
-//-------- Structs & typedefs ------------------------------------------------//
-
-//-------- Global variables --------------------------------------------------//
-
-//-------- Global function prototypes ----------------------------------------//
 
 void matrix_mult_d8 (   const uint32_t   SrcA_nRows,
                         const uint32_t   SrcA_nColumns,
@@ -42,6 +20,6 @@ void matrix_add_d8 (    const uint32_t   Src_nRows,
                         int8_t    SrcB[Src_nRows][Src_nColumns],
                         int8_t          Dst[Src_nRows][Src_nColumns]     );
 						
-//----------------------------------------------------------------------------//
+
 
 #endif
