@@ -32,7 +32,9 @@ extern void vect_store_vec1_16bits(unsigned int N,const int16_t *vec1);
 //------------------------------------------------------------------------
 
 extern void vect_ReLu(unsigned int N, const int8_t *vec1, int8_t *vecOut);
+extern void vect_ReLu_Bound(unsigned int N, const int8_t *vec1, int8_t *vecOut, int8_t lowerBound);
 extern void vect_ReLu6(unsigned int N, const int8_t *vec1, int8_t *vecOut);
+extern void vect_ReLu6_Bound(unsigned int N, const int8_t *vec1, int8_t *vecOut, int8_t lowerBound, int8_t upperBound);
 
 extern void vect_copy(unsigned int N,const int8_t *vec1, int8_t *vecOut);
 extern void vect_copy_reg(unsigned int N,const int8_t value, int8_t *vecOut);

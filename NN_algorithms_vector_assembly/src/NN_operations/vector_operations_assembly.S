@@ -267,12 +267,27 @@ loop_vect_ReLu:
 	  sub a0, a0, t0 					# Decrement number done 
       bnez a0, loop_vect_ReLu 			# Loop back 
       ret 								# Finished
+
  
-
-
+#void vect_ReLu_Bound(unsigned int N, const int8_t *vec1, int8_t *vecOut, int8_t lowerBound);
+# a0 = N, a1 = vec1, a2 = vecOut, a3=lowerBound  
+# Non-vector instructions are indented
+vect_ReLu_Bound: 
+	.globl   vect_ReLu_Bound
+	vsetvli t0, a0, e8, m4, d1			# Set vector length based on 8-bit vectors, group 4 VecReg together for efficiency 
+	vle.v v4, (a1) 						# Get first vector 
+	  add a1, a1, t0 					# Bump pointer 
+    vmax.vx v4, v4, a3 					# max vectors 
+	vse.v v4, (a2) 						# Store result 
+      add a2, a2, t0 					# Bump pointer 
+	  sub a0, a0, t0 					# Decrement number done 
+      bnez a0, vect_ReLu_Bound 			# Loop back 
+      ret 								# Finished
+	  
+	  
 
 #void vect_ReLu6(unsigned int N, const int8_t *vec1, int8_t *vecOut);
-# a0 = N, a1 = vec1, a3 = vecOut 
+# a0 = N, a1 = vec1, a2 = vecOut
 # Non-vector instructions are indented
 
 vect_ReLu6: 
@@ -290,6 +305,26 @@ loop_vect_ReLu6:
 	  sub a0, a0, t0 					# Decrement number done
       bnez a0, loop_vect_ReLu6 			# Loop back 
       ret 								# Finished
+
+#void vect_ReLu6_Bound(unsigned int N, const int8_t *vec1, int8_t *vecOut, int8_t lowerBound, int8_t upperBound);
+# a0 = N, a1 = vec1, a3 = vecOut, a3=lowerBound, a4=upperBound   
+# Non-vector instructions are indented
+
+vect_ReLu6_Bound: 
+	.globl   vect_ReLu6_Bound
+	vsetvli t0, a0, e8, m4, d1      	# Set vectors to be of 8 bits, group 4 VecReg together for efficiency 
+	vle.v v4, (a1) 						# Get first vector 
+      add a1, a1, t0 					# Bump pointer 
+	vmax.vx v4, v4, a3 					# max vectors 
+	vmin.vx v4, v4, a4 					# min vectors 
+	vse.v v4, (a2) 						# Store result 
+      add a2, a2, t0 					# Bump pointer 
+	  sub a0, a0, t0 					# Decrement number done
+      bnez a0, vect_ReLu6_Bound			# Loop back 
+      ret 								# Finished
+
+ 
+ 
  
  
  
