@@ -1,7 +1,6 @@
 #ifndef VECTOR_OPERATIONS_H_
 #define VECTOR_OPERATIONS_H_
 
-#include <stdlib.h>
 #include <stdint.h>
 
 #define MAX_INT8_T 127
@@ -14,12 +13,21 @@ extern void vect_add(unsigned int N, const int8_t *vec1, const int8_t *vec2, int
 extern void vect_mult(unsigned int N, const int8_t *vec1, const int8_t *vec2, int8_t *vecOut);
 
 extern void vect_addReduction(unsigned int N, const int8_t *vec1, int16_t *scalarOut);
-extern void vect_maxReduction(unsigned int N, const int8_t *vec1, int8_t *scalarOut);
-extern void vect_dotProduct(unsigned int N, const int8_t *vec1, const int8_t *vec2, int32_t *scalarOut);
-
 extern void vect_add_stride_vec2(unsigned int N, const int16_t *vec1,const int8_t *vec2, int16_t *vecOut, uint32_t stride);
+
+
+extern void vect_maxReduction(unsigned int N, const int8_t *vec1, int8_t *scalarOut);
 extern void vect_max_stride_vec2(unsigned int N, const int8_t *vec1,const int8_t *vec2, int8_t *vecOut, uint32_t stride);
+
+
+extern void vect_dotProduct(unsigned int N, const int8_t *vec1, const int8_t *vec2, int32_t *scalarOut);
+extern void vect_dotProduct_offset(unsigned int N, const int8_t *vec1, const int8_t *vec2, int32_t *scalarOut, const int8_t vec1Offset, const int8_t vec2Offset);
 extern void vect_dotProduct_stride_vec2(unsigned int N, const int8_t *vec1, const int8_t *vec2, int32_t *scalarOut, uint32_t stride);
+extern void vect_dotProduct_offset_stride_vec2(unsigned int N, const int8_t *vec1, const int8_t *vec2, int32_t *scalarOut, const int8_t vec1Offset, const int8_t vec2Offset, uint32_t stride);
+extern void vectu_dotProduct_offset_stride_vec2(unsigned int N, const uint8_t *vec1, const uint8_t *vec2, int32_t *scalarOut, const int8_t vec1Offset, const int8_t vec2Offset, uint32_t stride);
+
+
+
 
 //------------------------------------------------------------------------
 extern void vect_add_accum_vec1_stride_vec2(unsigned int N, const int8_t *vec2, uint32_t stride);
