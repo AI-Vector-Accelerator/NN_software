@@ -1,6 +1,4 @@
 #define MIN_INT8_T -128
-#define MAX_N_8BIT_VEC_REG 32/8*4
-#define MAX_N_16BIT_VEC_REG 32/16*4
 
 
 #void vect_add(unsigned int N, const int8_t *vec1, const int8_t *vec2, int8_t *vecOut);
@@ -158,7 +156,32 @@ loop_vect_dotProduct:
 	vmv.x.s t1, v1						# move answer to register
 	  sw	t1, 0(a3)					# finished loop, store answer
 	  ret								# return
-	  
+
+#vect_dotProduct_stride_vec2(unsigned int N, const int8_t *vec1, const int8_t *vec2, int32_t *scalarOut, uint32_t stride)
+# a0=N, a1=*vec1, a2=*vec2, a3=*scalarOut, a4=stride
+# v2=vec1, v4=vec2, v1=scalarOut, v8vec1 * vec2
+# Non-vector instructions are indented
+vect_dotProduct_stride_vec2:  
+    .globl   vect_dotProduct_stride_vec2
+	vsetvli t0, a0, e32, m1, d1      	# Set scalarOutput vector to be of 32 bits
+	vmv.v.i v1, 0						# set result vector to 0
+loop_vect_dotProduct_stride_vec2:
+	vsetvli t0, a0, e8, m2, d1      	# Set vectors to be of 8 bits, group 2 VecReg together for efficiency 
+	vle.v v2, (a1)          			# Get first vector
+	  add a1, a1, t0        			# Bump pointer
+	vlse.v v4, (a2), a4         		# Get second vector strided access
+	  mul t2, t0, a4					# multiply bump amount by stride 
+      add a2, a2, t2        			# Bump pointer
+	vwmul.vv v8, v2, v4  				# multiply vectors(widening instruction)
+	vsetvli t0, a0, e16, m4    			# output now in 4 vector registers, update to 16-bit elements
+	vwredsum.vs v1, v8, v1				# reduction sum of v1 * v2
+	  sub a0, a0, t0        			# Decrement number of bytes done
+	  bnez a0, loop_vect_dotProduct_stride_vec2		# loop back for any more 
+	vsetvli t0, a0, e32, m1, d1		    # set vector to 32-bit element
+	vmv.x.s t1, v1						# move answer to register
+	  sw	t1, 0(a3)					# finished loop, store answer
+	  ret								# return
+	  	  
 	  
 #void vect_dotProduct_offset(unsigned int N, const int8_t *vec1, const int8_t *vec2, int32_t *scalarOut, const int8_t vec1Offset, const int8_t vec2Offset);
 # a0=N, a1=*vec1, a2=*vec2, a3=*scalarOut, a4=vec1Offset ,a5=vec2Offset
@@ -168,17 +191,14 @@ vect_dotProduct_offset:
     .globl   vect_dotProduct_offset
 	vsetvli t0, a0, e32, m1, d1      	# Set scalarOutput vector to be of 32 bits
 	vmv.v.i v1, 0						# set result vector to 0
-	vsetvli t0, a0, e8, m2, d1      	# Set offsets vector to be of 8 bits
-	vmv.v.x v12, a4						# set offset vector 
-	vmv.v.x v14, a5						# set offset vector 
 loop_vect_dotProduct_offset:
 	vsetvli t0, a0, e8, m2, d1      	# Set vectors to be of 8 bits, group 2 VecReg together for efficiency 
 	vle.v v2, (a1)          			# Get first vector
 	  add a1, a1, t0        			# Bump pointer
 	vle.v v4, (a2)          			# Get second vector
       add a2, a2, t0        			# Bump pointer
-	vsadd.vv v2, v2, v12				# add offset to vectors
-	vsadd.vv v4, v4, v14				# add offset to vectors
+	vsadd.vx v2, v2, a4				# add offset to vectors
+	vsadd.vx v4, v4, a5				# add offset to vectors
 	vwmul.vv v8, v2, v4  				# multiply vectors(widening instruction)
 	vsetvli t0, a0, e16, m4    			# output now in 4 vector registers, update to 16-bit elements
 	vwredsum.vs v1, v8, v1				# reduction sum of v1 * v2
@@ -197,9 +217,6 @@ vect_dotProduct_offset_stride_vec2:
     .globl   vect_dotProduct_offset_stride_vec2
 	vsetvli t0, a0, e32, m1, d1      	# Set scalarOutput vector to be of 32 bits
 	vmv.v.i v1, 0						# set result vector to 0
-	vsetvli t0, a0, e8, m2, d1      	# Set offsets vector to be of 8 bits
-	vmv.v.x v12, a4						# set offset vector 
-	vmv.v.x v14, a5						# set offset vector 
 loop_vect_dotProduct_offset_stride_vec2:
 	vsetvli t0, a0, e8, m2, d1      	# Set vectors to be of 8 bits, group 2 VecReg together for efficiency 
 	vle.v v2, (a1)           			# Get first vector
@@ -207,8 +224,8 @@ loop_vect_dotProduct_offset_stride_vec2:
 	vlse.v v4, (a2), a6          		# Get second vector, strided load
 	  mul t2, t0, a6					# multiply bump amount by stride 
       add a2, a2, t2        			# Bump pointer
-    vsadd.vv v2, v2, v12				# add offset to vectors
-	vsadd.vv v4, v4, v14				# add offset to vectors
+    vsadd.vx v2, v2, a4				# add offset to vectors
+	vsadd.vx v4, v4, a5				# add offset to vectors
 	vwmul.vv v8, v2, v4  				# multiply vectors(widening instruction)
 	vsetvli t0, a0, e16, m4    			# output now in 4 vector registers, update to 16-bit elements
 	vwredsum.vs v1, v8, v1				# reduction sum of v1 * v2
@@ -237,16 +254,7 @@ loop_vectu_dotProduct_offset_stride_vec2:
 	vadd.vx v4, v4, a5					# add offset to vectors
 	vadd.vx v8, v8, a6					# add offset to vectors
 	vwmul.vv v12, v4, v8  				# multiply vectors(widening instruction)  
-	
-#	vwaddu.vx v16, v4, x0
- #   vwaddu.vx v20, v8, x0	
-#	vwadd.wx v16, v16, a5					# add offset to vectors
-#	vwadd.wx v20, v20, a6					# add offset to vectors
-#	vsetvli t0, a0, e16, m4
-#	vmul.vv v12, v16, v20
-	
-    
-    vsetvli t0, a0, e16, m4    			# output now in 4 vector registers, update to 16-bit elements
+	vsetvli t0, a0, e16, m4    			# output now in 4 vector registers, update to 16-bit elements
 	vwredsum.vs v1, v12, v1				# reduction sum of v1 * v2
 	  sub a0, a0, t0        			# Decrement number of bytes done
 	  bnez a0, loop_vectu_dotProduct_offset_stride_vec2		# loop back for any more 
@@ -257,94 +265,6 @@ loop_vectu_dotProduct_offset_stride_vec2:
 
 
 	  
-#vect_dotProduct_stride_vec2(unsigned int N, const int8_t *vec1, const int8_t *vec2, int32_t *scalarOut, uint32_t stride)
-# a0=N, a1=*vec1, a2=*vec2, a3=*scalarOut, a4=stride
-# v2=vec1, v4=vec2, v1=scalarOut, v8vec1 * vec2
-# Non-vector instructions are indented
-vect_dotProduct_stride_vec2:  
-    .globl   vect_dotProduct_stride_vec2
-	vsetvli t0, a0, e32, m1, d1      	# Set scalarOutput vector to be of 32 bits
-	vmv.v.i v1, 0						# set result vector to 0
-loop_vect_dotProduct_stride_vec2:
-	vsetvli t0, a0, e8, m2, d1      	# Set vectors to be of 8 bits, group 2 VecReg together for efficiency 
-	vle.v v2, (a1)          			# Get first vector
-	  add a1, a1, t0        			# Bump pointer
-	vlse.v v4, (a2), a4         		# Get second vector strided access
-	  mul t2, t0, a4					# multiply bump amount by stride 
-      add a2, a2, t2        			# Bump pointer
-	vwmul.vv v8, v2, v4  				# multiply vectors(widening instruction)
-	vsetvli t0, a0, e16, m4    			# output now in 4 vector registers, update to 16-bit elements
-	vwredsum.vs v1, v8, v1				# reduction sum of v1 * v2
-	  sub a0, a0, t0        			# Decrement number of bytes done
-	  bnez a0, loop_vect_dotProduct_stride_vec2		# loop back for any more 
-	vsetvli t0, a0, e32, m1, d1		    # set vector to 32-bit element
-	vmv.x.s t1, v1						# move answer to register
-	  sw	t1, 0(a3)					# finished loop, store answer
-	  ret								# return
-	  
-
-#---------------------------------------------------------------------------------------------
-	  
-# void vect_add_accum_vec1_stride_vec2(unsigned int N, const int8_t *vec2, uint32_t stride);
-# a0=N, a1=*vec2, a3=stride
-# v4=vec2, v28=vec1
-vect_add_accum_vec1_stride_vec2:
-	.globl vect_add_accum_vec1_stride_vec2
-	vsetvli t0, t1, e8, m4, d1      	# Set 16 bits, 4 vec regs
-	vlse.v v4, (a1), a3         		# Get second vector strided access
-	vwadd.wv v28, v28, v4  				# add vector
-	  ret
-
-# void vect_max_accum_vec1_stride_vec2(unsigned int N, const int8_t *vec2, uint32_t stride);	  
-# a0=N, a1=*vec2, a3=stride
-# v4=vec2, v28=vec1 
-vect_max_accum_vec1_stride_vec2:
-	.globl vect_max_accum_vec1_stride_vec2
-	vsetvli t0, t1, e16, m4, d1      	# Set 16 bits, 4 vec regs
-	vlse.v v4, (a1), a3         		# Get second vector strided access
-	vmax.vv  v28, v28, v4  				# add vector
-	  ret	  
-	
-# void vect_load_vec1_8bits(int8_t value);
-# a1=value
-# vec1=v28 for m4
-vect_load_vec1_8bits:
-	.globl vect_load_vec1_8bits
-	  li t1, MAX_N_8BIT_VEC_REG
-	vsetvli t0, t1, e8, m4, d1      	# Set 8 bits, 4 vec regs
-	vmv.v.x v28, a0						# set result vector to value
-	  ret								# v28 will always hold vec1
-	
-# void vect_load_vec1_16bits(int16_t value);
-# a1=value
-# vec1=v28 for m4
-vect_load_vec1_16bits:
-	.globl vect_load_vec1_16bits
-	  li t1, MAX_N_16BIT_VEC_REG
-	vsetvli t0, t1, e16, m4, d1      	# Set 16 bits, 4 vec regs
-	vmv.v.x v28, a0						# set result vector to value
-	  ret								# v28 will always hold vec1
-	
-# void vect_store_vec1_8bits(unsigned int N,const int16_t *vec1);
-# a0=N, a1=*vec1
-# vec1=v28 for m4
-vect_store_vec1_8bits:
-	.globl vect_store_vec1_8bits
-	vsetvli t0, a0, e8, m4, d1      	# Set 8 bits, 4 vec regs
-	vse.v v28, (a1)						# store vec1
-	  ret								# v28 will always hold vec1
-	
-# void vect_store_vec1_16bits(unsigned int N,const int8_t *vec1);	
-# a0=N, a1=*vec1
-# vec1=v28 for m4
-vect_store_vec1_16bits:
-	.globl vect_store_vec1_16bits
-	vsetvli t0, a0, e16, m4, d1      	# Set 16 bits, 4 vec regs
-	vse.v v28, (a1)						# store vec1
-	  ret								# v28 will always hold vec1
-
-#---------------------------------------------------------------------------------------------
-
 
 
 

@@ -6,8 +6,6 @@
 #define MAX_INT8_T 127
 #define MIN_INT8_T -128
 
-#define MAX_N_8BIT_VEC_REG 32/8*4
-#define MAX_N_16BIT_VEC_REG 32/16*4
 
 extern void vect_add(unsigned int N, const int8_t *vec1, const int8_t *vec2, int8_t *vecOut);
 extern void vect_mult(unsigned int N, const int8_t *vec1, const int8_t *vec2, int8_t *vecOut);
@@ -27,22 +25,11 @@ extern void vect_dotProduct_offset_stride_vec2(unsigned int N, const int8_t *vec
 extern void vectu_dotProduct_offset_stride_vec2(unsigned int N, const uint8_t *vec1, const uint8_t *vec2, int32_t *scalarOut, const int8_t vec1Offset, const int8_t vec2Offset, uint32_t stride);
 
 
-
-
-//------------------------------------------------------------------------
-extern void vect_add_accum_vec1_stride_vec2(unsigned int N, const int8_t *vec2, uint32_t stride);
-extern void vect_max_accum_vec1_stride_vec2(unsigned int N, const int8_t *vec2, uint32_t stride);
-
-extern void vect_load_vec1_8bits(int8_t value);
-extern void vect_load_vec1_16bits(int16_t value);
-extern void vect_store_vec1_8bits(unsigned int N,const int8_t *vec1);
-extern void vect_store_vec1_16bits(unsigned int N,const int16_t *vec1);
-//------------------------------------------------------------------------
-
 extern void vect_ReLu(unsigned int N, const int8_t *vec1, int8_t *vecOut);
 extern void vect_ReLu_Bound(unsigned int N, const int8_t *vec1, int8_t *vecOut, int8_t lowerBound);
 extern void vect_ReLu6(unsigned int N, const int8_t *vec1, int8_t *vecOut);
 extern void vect_ReLu6_Bound(unsigned int N, const int8_t *vec1, int8_t *vecOut, int8_t lowerBound, int8_t upperBound);
+
 
 extern void vect_copy(unsigned int N,const int8_t *vec1, int8_t *vecOut);
 extern void vect_copy_reg(unsigned int N,const int8_t value, int8_t *vecOut);
