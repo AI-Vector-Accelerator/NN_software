@@ -10,6 +10,7 @@ extern "C" {
 #define MAX_INT8_T 127
 #define MIN_INT8_T -128
 
+extern void vect_init(void);
 
 extern void vect_add(unsigned int N, const int8_t *vec1, const int8_t *vec2, int8_t *vecOut);
 extern void vect_mult(unsigned int N, const int8_t *vec1, const int8_t *vec2, int8_t *vecOut);
@@ -23,10 +24,11 @@ extern void vect_max_stride_vec2(unsigned int N, const int8_t *vec1,const int8_t
 
 
 extern void vect_dotProduct(unsigned int N, const int8_t *vec1, const int8_t *vec2, int32_t *scalarOut);
-extern void vect_dotProduct_offset(unsigned int N, const int8_t *vec1, const int8_t *vec2, int32_t *scalarOut, const int8_t vec1Offset, const int8_t vec2Offset);
 extern void vect_dotProduct_stride_vec2(unsigned int N, const int8_t *vec1, const int8_t *vec2, int32_t *scalarOut, uint32_t stride);
-extern void vect_dotProduct_offset_stride(unsigned int N, const int8_t *vec1, const int8_t *vec2, int32_t *scalarOut, const int8_t vec1Offset, const int8_t vec2Offset, uint32_t vec1Stride, uint32_t vec2Stride);
-extern void vectu_dotProduct_offset_stride(unsigned int N, const uint8_t *vec1, const uint8_t *vec2, int32_t *scalarOut, const int8_t vec1Offset, const int8_t vec2Offset, uint32_t vec1Stride, uint32_t vec2Stride);
+extern void vect_dotProduct_offset(unsigned int N, const int8_t *vec1, const int8_t *vec2, int32_t *scalarOut, const int32_t vec1Offset, const int32_t vec2Offset);
+extern void vectu_dotProduct_offset(unsigned int N, const uint8_t *vec1, const uint8_t *vec2, int32_t *scalarOut, const int32_t vec1Offset, const int32_t vec2Offset);
+extern void vect_dotProduct_offset_stride(unsigned int N, const int8_t *vec1, const int8_t *vec2, int32_t *scalarOut, const int32_t vec1Offset, const int32_t vec2Offset, uint32_t vec1Stride, uint32_t vec2Stride);
+extern void vectu_dotProduct_offset_stride(unsigned int N, const uint8_t *vec1, const uint8_t *vec2, int32_t *scalarOut, const int32_t vec1Offset, const int32_t vec2Offset, uint32_t vec1Stride, uint32_t vec2Stride);
 
 
 extern void vect_ReLu(unsigned int N, const int8_t *vec1, int8_t *vecOut);

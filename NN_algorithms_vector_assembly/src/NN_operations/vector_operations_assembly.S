@@ -1,7 +1,11 @@
 #define MIN_INT8_T -128
 
+vect_init:
+	.globl vect_init
+	vsetvli t0, a0, e8, m4, d1
+	  ret
 
-#void vect_add(unsigned int N, const int8_t *vec1, const int8_t *vec2, int8_t *vecOut);
+# void vect_add(unsigned int N, const int8_t *vec1, const int8_t *vec2, int8_t *vecOut);
 # a0 = N, a1 = *vec1, a2 = *vec2, a3 = *vecOut 
 # v4=vec1, v8=vec2, v12=vec3
 # Non-vector instructions are indented
@@ -22,7 +26,7 @@ vect_add:
 
 
 
-#void void vect_mult(unsigned int N,const int8_t *vec1, const int8_t *vec2, int8_t *vecOut)
+# void void vect_mult(unsigned int N,const int8_t *vec1, const int8_t *vec2, int8_t *vecOut)
 # a0 = N, a1 = *vec1, a2 = *vec2, a3 = *vecOut 
 # v4=vec1, v8=vec2, v12=vec3
 # Non-vector instructions are indented
@@ -43,7 +47,7 @@ vect_mult:
 		
 		
   
-#vect_addReduction(unsigned int N, const int8_t *vec1, int16_t *scalarOut)
+# vect_addReduction(unsigned int N, const int8_t *vec1, int16_t *scalarOut)
 # a0=N, a1=*vec1, a2=*scalarOut
 # v4=vec1, v1=scalarOut
 # Non-vector instructions are indented 
@@ -64,7 +68,7 @@ loop_vect_addReduction:
 	  ret								# return
  
  
-#vect_add_stride_vec2(unsigned int N, const int16_t *vec1,const int8_t *vec2, int16_t *vecOut, uint32_t stride);
+# vect_add_stride_vec2(unsigned int N, const int16_t *vec1,const int8_t *vec2, int16_t *vecOut, uint32_t stride);
 # a0 = N, a1 = *vec1, a2 = *vec2, a3 = *vecOut ,a4=stride
 # v4=vec1, v8=vec2, v12=vec3
 # Non-vector instructions are indented
@@ -89,7 +93,7 @@ loop_vect_add_stride_vec2:
  
 
 
-#vect_maxReduction(unsigned int N, const int8_t *vec1, int8_t *scalarOut)
+# vect_maxReduction(unsigned int N, const int8_t *vec1, int8_t *scalarOut)
 # a0=N, a1=*vec1, a2=*scalarOut
 # v4=vec1, v1=scalarOut
 # Non-vector instructions are indented
@@ -108,7 +112,7 @@ loop_vect_maxReduction:
 	  ret								# return
 
 
-#vect_max_stride_vec2(unsigned int N, const int8_t *vec1,const int8_t *vec2, int8_t *vecOut, uint32_t stride);
+# vect_max_stride_vec2(unsigned int N, const int8_t *vec1,const int8_t *vec2, int8_t *vecOut, uint32_t stride);
 # a0 = N, a1 = *vec1, a2 = *vec2, a3 = *vecOut ,a4=stride
 # v4=vec1, v8=vec2, v12=vec3
 # Non-vector instructions are indented
@@ -133,7 +137,7 @@ loop_vect_max_stride_vec2:
 	  
 	  
  
-#vect_dotProduct(unsigned int N, const int8_t *vec1, const int8_t *vec2, int32_t *scalarOut)
+# vect_dotProduct(unsigned int N, const int8_t *vec1, const int8_t *vec2, int32_t *scalarOut)
 # a0=N, a1=*vec1, a2=*vec2, a3=*scalarOut
 # v2=vec1, v4=vec2, v1=scalarOut, v8vec1 * vec2
 # Non-vector instructions are indented
@@ -157,7 +161,7 @@ loop_vect_dotProduct:
 	  sw	t1, 0(a3)					# finished loop, store answer
 	  ret								# return
 
-#vect_dotProduct_stride_vec2(unsigned int N, const int8_t *vec1, const int8_t *vec2, int32_t *scalarOut, uint32_t stride)
+# vect_dotProduct_stride_vec2(unsigned int N, const int8_t *vec1, const int8_t *vec2, int32_t *scalarOut, uint32_t stride)
 # a0=N, a1=*vec1, a2=*vec2, a3=*scalarOut, a4=stride
 # v2=vec1, v4=vec2, v1=scalarOut, v8vec1 * vec2
 # Non-vector instructions are indented
@@ -183,7 +187,7 @@ loop_vect_dotProduct_stride_vec2:
 	  ret								# return
 	  	  
 	  
-#void vect_dotProduct_offset(unsigned int N, const int8_t *vec1, const int8_t *vec2, int32_t *scalarOut, const int8_t vec1Offset, const int8_t vec2Offset);
+# void vect_dotProduct_offset(unsigned int N, const int8_t *vec1, const int8_t *vec2, int32_t *scalarOut, const int8_t vec1Offset, const int8_t vec2Offset);
 # a0=N, a1=*vec1, a2=*vec2, a3=*scalarOut, a4=vec1Offset ,a5=vec2Offset
 # v2=vec1, v4=vec2, v1=scalarOut, v8vec1 * vec2, v12=vec1Offset, v14=vec2Offset
 # Non-vector instructions are indented
@@ -193,25 +197,55 @@ vect_dotProduct_offset:
 	vmv.v.i v1, 0						# set result vector to 0
 loop_vect_dotProduct_offset:
 	vsetvli t0, a0, e8, m2, d1      	# Set vectors to be of 8 bits, group 2 VecReg together for efficiency 
-	vle.v v2, (a1)          			# Get first vector
+	vle.v v4, (a1)          			# Get first vector
 	  add a1, a1, t0        			# Bump pointer
-	vle.v v4, (a2)          			# Get second vector
+	vle.v v8, (a2)          			# Get second vector
       add a2, a2, t0        			# Bump pointer
-	vsadd.vx v2, v2, a4				# add offset to vectors
-	vsadd.vx v4, v4, a5				# add offset to vectors
-	vwmul.vv v8, v2, v4  				# multiply vectors(widening instruction)
+	vwadd.vx v16, v4, x0				# widen vectors
+	vwadd.vx v20, v8, x0				# widen vectors
 	vsetvli t0, a0, e16, m4    			# output now in 4 vector registers, update to 16-bit elements
-	vwredsum.vs v1, v8, v1				# reduction sum of v1 * v2
+	vadd.vx v16, v16, a4				# add offset to vectors
+	vadd.vx v20, v20, a5				# add offset to vectors
+	vmul.vv v12, v16, v20  				# multiply vectors
+	vwredsum.vs v1, v12, v1				# reduction sum of v1 * v2
 	  sub a0, a0, t0        			# Decrement number of bytes done
 	  bnez a0, loop_vect_dotProduct_offset		# loop back for any more 
 	vsetvli t0, a0, e32, m1, d1		    # set vector to 32-bit element
 	vmv.x.s t1, v1						# move answer to register
 	  sw	t1, 0(a3)					# finished loop, store answer
 	  ret								# return
-	  
-#void vect_dotProduct_offset_stride(unsigned int N, const int8_t *vec1, const int8_t *vec2, int32_t *scalarOut, const int8_t vec1Offset, const int8_t vec2Offset, uint32_t vec1Stride, uint32_t vec2Stride);
+
+# void vectu_dotProduct_offset(unsigned int N, const uint8_t *vec1, const uint8_t *vec2, int32_t *scalarOut, const int8_t vec1Offset, const int8_t vec2Offset);
+# a0=N, a1=*vec1, a2=*vec2, a3=*scalarOut, a4=vec1Offset ,a5=vec2Offset
+# v4=vec1, v8=vec2, v1=scalarOut, v12=vec1 * vec2
+# Non-vector instructions are indented
+vectu_dotProduct_offset:  
+    .globl   vectu_dotProduct_offset
+	vsetvli t0, a0, e32, m1, d1      	# Set scalarOutput vector to be of 32 bits
+	vmv.v.i v1, 0						# set result vector to 0
+loop_vectu_dotProduct_offset:
+	vsetvli t0, a0, e8, m2, d1      	# Set vectors to be of 8 bits, group 2 VecReg together for efficiency 
+	vle.v v4, (a1)		           		# Get first vector, strided load
+	  add a1, a1, t0	       			# Bump pointer
+	vle.v v8, (a2)		          		# Get second vector, strided load
+	  add a2, a2, t0        			# Bump pointer
+	vadd.vx v4, v4, a4					# add offset to vectors
+	vadd.vx v8, v8, a5					# add offset to vectors
+	vwmul.vv v12, v4, v8  				# multiply vectors(widening instruction)  
+	vsetvli t0, a0, e16, m4    			# output now in 4 vector registers, update to 16-bit elements
+	vwredsum.vs v1, v12, v1				# reduction sum of v1 * v2
+	  sub a0, a0, t0        			# Decrement number of bytes done
+	  bnez a0, loop_vectu_dotProduct_offset		# loop back for any more 
+	vsetvli t0, a0, e32, m1, d1		    # set vector to 32-bit element
+	vmv.x.s t1, v1						# move answer to register
+	  sw	t1, 0(a3)					# finished loop, store answer
+	  ret								# return
+
+
+
+# void vect_dotProduct_offset_stride(unsigned int N, const int8_t *vec1, const int8_t *vec2, int32_t *scalarOut, const int8_t vec1Offset, const int8_t vec2Offset, uint32_t vec1Stride, uint32_t vec2Stride);
 # a0=N, a1=*vec1, a2=*vec2, a3=*scalarOut, a4=vec1Offset ,a5=vec2Offset, a6=vec1Stride, a7=vec2Stride
-# v2=vec1, v4=vec2, v1=scalarOut, v8vec1 * vec2, v12=vec1Offset, v14=vec2Offset
+# v4=vec1, v8=vec2, v1=scalarOut, v12=vec1 * vec2
 # Non-vector instructions are indented
 vect_dotProduct_offset_stride:  
     .globl   vect_dotProduct_offset_stride
@@ -223,12 +257,15 @@ loop_vect_dotProduct_offset_stride:
 	  mul t2, t0, a6					# multiply bump amount by stride 
 	  add a1, a1, t2        			# Bump pointer
 	vlse.v v8, (a2), a7          		# Get second vector, strided load
-	  add a2, a2, t2        			# Bump pointer
-    vsadd.vx v4, v4, a4					# add offset to vectors
-	vsadd.vx v8, v8, a5					# add offset to vectors
-	vwmul.vv v12, v8, v4  				# multiply vectors(widening instruction)
+	  mul t3, t0, a7					# multiply bump amount by stride 
+	  add a2, a2, t3        			# Bump pointer
+	vwadd.vx v16, v4, x0				# widen vectors
+	vwadd.vx v20, v8, x0				# widen vectors
 	vsetvli t0, a0, e16, m4    			# output now in 4 vector registers, update to 16-bit elements
-	vwredsum.vs v12, v8, v12			# reduction sum of v1 * v2
+	vadd.vx v16, v16, a4				# add offset to vectors
+	vadd.vx v20, v20, a5				# add offset to vectors
+	vmul.vv v12, v16, v20  				# multiply vectors
+	vwredsum.vs v1, v12, v1				# reduction sum of v1 * v2
 	  sub a0, a0, t0        			# Decrement number of bytes done
 	  bnez a0, loop_vect_dotProduct_offset_stride		# loop back for any more 
 	vsetvli t0, a0, e32, m1, d1		    # set vector to 32-bit element
@@ -236,7 +273,7 @@ loop_vect_dotProduct_offset_stride:
 	  sw	t1, 0(a3)					# finished loop, store answer
 	  ret								# return
 	  
-#void vectu_dotProduct_offset_stride(unsigned int N, const uint8_t *vec1, const uint8_t *vec2, int32_t *scalarOut, const int8_t vec1Offset, const int8_t vec2Offset, uint32_t vec1Stride, uint32_t vec2Stride);
+# void vectu_dotProduct_offset_stride(unsigned int N, const uint8_t *vec1, const uint8_t *vec2, int32_t *scalarOut, const int8_t vec1Offset, const int8_t vec2Offset, uint32_t vec1Stride, uint32_t vec2Stride);
 # a0=N, a1=*vec1, a2=*vec2, a3=*scalarOut, a4=vec1Offset ,a5=vec2Offset, a6=vec1Stride, a7=vec2Stride
 # v4=vec1, v8=vec2, v1=scalarOut, v12=vec1 * vec2
 # Non-vector instructions are indented
@@ -250,7 +287,8 @@ loop_vectu_dotProduct_offset_stride:
 	  mul t2, t0, a6					# multiply bump amount by stride 
 	  add a1, a1, t2        			# Bump pointer
 	vlse.v v8, (a2), a7          		# Get second vector, strided load
-	  add a2, a2, t2        			# Bump pointer
+	  mul t3, t0, a7					# multiply bump amount by stride 
+	  add a2, a2, t3        			# Bump pointer
 	vadd.vx v4, v4, a4					# add offset to vectors
 	vadd.vx v8, v8, a5					# add offset to vectors
 	vwmul.vv v12, v4, v8  				# multiply vectors(widening instruction)  
@@ -268,7 +306,7 @@ loop_vectu_dotProduct_offset_stride:
 
 
 
-#void vect_ReLu(unsigned int N, const int8_t *vec1, int8_t *vecOut);
+# void vect_ReLu(unsigned int N, const int8_t *vec1, int8_t *vecOut);
 # a0 = N, a1 = vec1, a2 = vecOut 
 # Non-vector instructions are indented
 vect_ReLu: 
@@ -286,7 +324,7 @@ loop_vect_ReLu:
       ret 								# Finished
 
  
-#void vect_ReLu_Bound(unsigned int N, const int8_t *vec1, int8_t *vecOut, int8_t lowerBound);
+# void vect_ReLu_Bound(unsigned int N, const int8_t *vec1, int8_t *vecOut, int8_t lowerBound);
 # a0 = N, a1 = vec1, a2 = vecOut, a3=lowerBound  
 # Non-vector instructions are indented
 vect_ReLu_Bound: 
@@ -303,7 +341,7 @@ vect_ReLu_Bound:
 	  
 	  
 
-#void vect_ReLu6(unsigned int N, const int8_t *vec1, int8_t *vecOut);
+# void vect_ReLu6(unsigned int N, const int8_t *vec1, int8_t *vecOut);
 # a0 = N, a1 = vec1, a2 = vecOut
 # Non-vector instructions are indented
 
@@ -323,7 +361,7 @@ loop_vect_ReLu6:
       bnez a0, loop_vect_ReLu6 			# Loop back 
       ret 								# Finished
 
-#void vect_ReLu6_Bound(unsigned int N, const int8_t *vec1, int8_t *vecOut, int8_t lowerBound, int8_t upperBound);
+# void vect_ReLu6_Bound(unsigned int N, const int8_t *vec1, int8_t *vecOut, int8_t lowerBound, int8_t upperBound);
 # a0 = N, a1 = vec1, a3 = vecOut, a3=lowerBound, a4=upperBound   
 # Non-vector instructions are indented
 
@@ -345,7 +383,7 @@ vect_ReLu6_Bound:
  
  
  
-#void vect_copy(unsigned int N,const int8_t *vec1, int8_t *vecOut);
+# void vect_copy(unsigned int N,const int8_t *vec1, int8_t *vecOut);
 # a0 = N, a1 = vec1, a2 = *vecOut 
 vect_copy:
 	.globl	vect_copy
@@ -358,7 +396,7 @@ vect_copy:
       bnez a0, vect_copy	 			# Loop back 
       ret 								# Finished	  
 	  
-#void vect_copy_reg(unsigned int N,const int8_t value, int8_t *vecOut);
+# void vect_copy_reg(unsigned int N,const int8_t value, int8_t *vecOut);
 # a0 = N, a1 = value, a2 = *vecOut
 vect_copy_reg:
 	.globl	vect_copy_reg

@@ -1,7 +1,7 @@
 #include "NN_algorithms_testbench.h"
 
 //matrix width goes across ->, height goes down
-int main(void){
+int main(void){vect_init();
 	unsigned long startCycles, endCycles, cyclesToRun, Cycles_NN_operations=0;
 	unsigned long Cycles_vector=0, Cycles_matrix_Pooling=0, Cycles_conv2d=0;	
 			
