@@ -65,7 +65,7 @@ void conv2D_multiInputChannel(
 							kernelWidthPosition=(uint32_t)-dataWidthPosition;
 							dataWidthPosition=0;
 						}else if(dataWidthPosition+kernel_width>width){
-							vecN=kernel_width+(dataWidthPosition-width);
+							vecN=(width-dataWidthPosition);
 							kernelWidthPosition=0;
 						}else{
 							vecN=kernel_width;
