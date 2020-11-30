@@ -378,6 +378,18 @@ vect_ReLu6_Bound:
       bnez a0, vect_ReLu6_Bound			# Loop back 
       ret 								# Finished
 
+vect_ReLu6_Bound_unsigned: 
+	.globl   vect_ReLu6_Bound_unsigned
+	vsetvli t0, a0, e8, m4, d1      	# Set vectors to be of 8 bits, group 4 VecReg together for efficiency 
+	vle.v v4, (a1) 						# Get first vector 
+      add a1, a1, t0 					# Bump pointer 
+	vmaxu.vx v4, v4, a3 					# max vectors 
+	vminu.vx v4, v4, a4 					# min vectors 
+	vse.v v4, (a2) 						# Store result 
+      add a2, a2, t0 					# Bump pointer 
+	  sub a0, a0, t0 					# Decrement number done
+      bnez a0, vect_ReLu6_Bound			# Loop back 
+      ret 								# Finished
  
  
  
