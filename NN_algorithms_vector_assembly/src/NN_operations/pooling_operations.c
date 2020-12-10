@@ -42,24 +42,6 @@ void max_pool_d8 (	const uint32_t	Src_nRows,
 			}
 		}
 	}
-	
-	/*uint32_t currentVecLength;
-	for (uint32_t i = 0; i < Src_nRows/Src_filter_nRows; i++){
-		for (uint32_t n= 0;n<vecLength/MAX_N_8BIT_VEC_REG+vecLength%MAX_N_8BIT_VEC_REG;n++){
-			currentVecLength=vecLength%MAX_N_8BIT_VEC_REG;
-			if(currentVecLength==0){currentVecLength=MAX_N_8BIT_VEC_REG;}
-			vect_load_vec1_8bits(MIN_INT8_T);
-			for (uint32_t k = 0; k < Src_filter_nRows; k++){
-				position_i = i*Src_Stride + k;
-				for (uint32_t l = 0; l < Src_filter_nColumns; l++){
-					position_j = l+n*MAX_N_8BIT_VEC_REG;
-					vect_max_accum_vec1_stride_vec2(currentVecLength, &Src[position_i][position_j], Src_filter_nColumns);
-				}
-			}
-			vect_store_vec1_8bits(n, &Dst[i][n*MAX_N_8BIT_VEC_REG]);
-		}
-	}*/
-	
 }
 
 /* * @brief  Find the average pool using the input filter matrix

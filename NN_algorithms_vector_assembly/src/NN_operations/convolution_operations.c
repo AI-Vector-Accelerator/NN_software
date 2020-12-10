@@ -15,22 +15,10 @@ void conv2D_multiInputChannel(
 	int32_t tempHeightOffset, tempWidthOffset,dataHeightPosition=0,dataWidthPosition=0;
 	uint32_t kernelWidthPosition=0,vecN=kernel_width;
 	
-	//uint8_t padding=0;
-
-	//if output matrix is too large, padding is required, therefore generate padded input matrix and pass this to conv function and return
-	//(might)seems to be faster to make a padded matrix and run through no padding conv function than to just run matrix through padded conv function due to over head for vector extensions
-	// and if padded matrix is used can use padding function which is vector accelerated
-	if(outputDataHeight>(height-kernel_height )/stride+1 || outputDataWidth>(width-kernel_width )/stride+1){
-		//padding=1;
-		uint32_t paddedHeight, paddedWidth;
-		getPaddedInputDimensionsConv2D(kernel_height,kernel_width,stride,outputDataHeight,outputDataWidth,&paddedHeight, &paddedWidth);
-		int8_t paddedData[channel][paddedHeight][paddedWidth];
-		padMatrix(height,width,channel,paddedHeight,paddedWidth,data,paddedData);
-		conv2D_multiInputChannel(paddedHeight, paddedWidth, channel, kernel_height, kernel_width, stride,outputDataHeight, outputDataWidth, paddedData, kernel, output);
-		return;
-	}
+	uint8_t padding=0;
+	if(outputDataHeight>(height-kernel_height )/stride+1 || outputDataWidth>(width-kernel_width )/stride+1){padding=1;}
 	
-	//if(padding==0){
+	if(padding==0){
 		for(uint32_t heightCounter=0;heightCounter<outputDataHeight;heightCounter++){
 			for(uint32_t widthCounter=0;widthCounter<outputDataWidth;widthCounter++){
 				dotProduct=0;
@@ -40,7 +28,6 @@ void conv2D_multiInputChannel(
 					for(uint32_t heightOffsetCounter=0;heightOffsetCounter<kernel_height;heightOffsetCounter++){
 						dataHeightPosition=tempHeightOffset+heightOffsetCounter;
 						dataWidthPosition=tempWidthOffset;
-						
 						vect_dotProduct(vecN,&kernel[channelCounter][heightOffsetCounter][kernelWidthPosition],&data[channelCounter][(uint32_t)dataHeightPosition][(uint32_t)dataWidthPosition],&tempDotProduct);
 						dotProduct+=tempDotProduct;
 					}
@@ -48,29 +35,29 @@ void conv2D_multiInputChannel(
 				output[heightCounter][widthCounter] = saturate_32bit_to_8bit( dotProduct );	
 			}
 		}
-	/*}else{
+	}else{
 		for(uint32_t heightCounter=0;heightCounter<outputDataHeight;heightCounter++){
 			for(uint32_t widthCounter=0;widthCounter<outputDataWidth;widthCounter++){
 				dotProduct=0;
 				tempHeightOffset=heightCounter*stride+heightOffset;
 				tempWidthOffset=widthCounter*stride+widthOffset;
-				for(uint32_t channelCounter=0;channelCounter<channel;channelCounter++){
-					for(uint32_t heightOffsetCounter=0;heightOffsetCounter<kernel_height;heightOffsetCounter++){
-						dataHeightPosition=tempHeightOffset+heightOffsetCounter;
-						dataWidthPosition=tempWidthOffset;
+				for(uint32_t heightOffsetCounter=0;heightOffsetCounter<kernel_height;heightOffsetCounter++){
+					dataHeightPosition=tempHeightOffset+heightOffsetCounter;
+					dataWidthPosition=tempWidthOffset;
 						
-						if(dataHeightPosition<0 || dataHeightPosition>=height){continue;} 
-						if(dataWidthPosition<0){
-							vecN=kernel_width+dataWidthPosition;
-							kernelWidthPosition=(uint32_t)-dataWidthPosition;
-							dataWidthPosition=0;
-						}else if(dataWidthPosition+kernel_width>width){
-							vecN=(width-dataWidthPosition);
-							kernelWidthPosition=0;
-						}else{
-							vecN=kernel_width;
-							kernelWidthPosition=0;
-						}
+					if(dataHeightPosition<0 || dataHeightPosition>=height){continue;} 
+					if(dataWidthPosition<0){
+						vecN=kernel_width+dataWidthPosition;
+						kernelWidthPosition=(uint32_t)-dataWidthPosition;
+						dataWidthPosition=0;
+					}else if(dataWidthPosition+kernel_width>width){
+						vecN=(width-dataWidthPosition);
+						kernelWidthPosition=0;
+					}else{
+						vecN=kernel_width;
+						kernelWidthPosition=0;
+					}
+					for(uint32_t channelCounter=0;channelCounter<channel;channelCounter++){
 						vect_dotProduct(vecN,&kernel[channelCounter][heightOffsetCounter][kernelWidthPosition],&data[channelCounter][(uint32_t)dataHeightPosition][(uint32_t)dataWidthPosition],&tempDotProduct);
 						dotProduct+=tempDotProduct;
 					}
@@ -78,7 +65,7 @@ void conv2D_multiInputChannel(
 				output[heightCounter][widthCounter] = saturate_32bit_to_8bit( dotProduct );	
 			}
 		}
-	}	*/		
+	}		
 }
 
 void conv2D_pointwise( //this is a special case, and this is why it has its own function
