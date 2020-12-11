@@ -120,7 +120,8 @@ vect_addReduction_stride:
 loop_vect_addReduction_stride:
 	vsetvli t0, a0, e8, m4, d1      	# Set vectors to be of 8 bits, group 4 VecReg together for efficiency 
 	vlse.v v4, (a1), a4        			# Get first vector
-	  add a1, a1, t0        			# Bump pointer
+	  mul t2, t0, a4					# multiply bump amount by stride 
+	  add a1, a1, t2        			# Bump pointer
 	  sub a0, a0, t0        			# Decrement number of bytes done
 	vwredsum.vs v1, v4, v1  			# reduction sum vector
 	  bnez a0, loop_vect_addReduction_stride	# loop back for any more 
@@ -140,7 +141,8 @@ vectu_addReduction_stride:
 loop_vectu_addReduction_stride:
 	vsetvli t0, a0, e8, m4, d1      	# Set vectors to be of 8 bits, group 4 VecReg together for efficiency 
 	vlse.v v4, (a1), a4        			# Get first vector
-	  add a1, a1, t0        			# Bump pointer
+	  mul t2, t0, a4					# multiply bump amount by stride 
+	  add a1, a1, t2        			# Bump pointer
 	  sub a0, a0, t0        			# Decrement number of bytes done
 	vwredsumu.vs v1, v4, v1  			# reduction sum vector
 	  bnez a0, loop_vectu_addReduction_stride	# loop back for any more 
@@ -184,7 +186,8 @@ vect_maxReduction_stride:
 loop_vect_maxReduction_stride:
 	vsetvli t0, a0, e8, m4, d1      	# Set vectors to be of 8 bits, group 4 VecReg together for efficiency 
 	vlse.v v4, (a1), a4        			# Get first vector
-	  add a1, a1, t0        			# Bump pointer
+	  mul t2, t0, a4					# multiply bump amount by stride 
+	  add a1, a1, t2        			# Bump pointer
 	  sub a0, a0, t0        			# Decrement number of bytes done
 	vredmax.vs v1, v4, v1  				# max vector
 	  bnez a0, loop_vect_maxReduction_stride	# loop back for any more 
@@ -205,7 +208,8 @@ vectu_maxReduction_stride:
 loop_vectu_maxReduction_stride:
 	vsetvli t0, a0, e8, m4, d1      	# Set vectors to be of 8 bits, group 4 VecReg together for efficiency 
 	vlse.v v4, (a1), a4        			# Get first vector
-	  add a1, a1, t0        			# Bump pointer
+	  mul t2, t0, a4					# multiply bump amount by stride 
+	  add a1, a1, t2        			# Bump pointer
 	  sub a0, a0, t0        			# Decrement number of bytes done
 	vredmaxu.vs v1, v4, v1  				# max vector
 	  bnez a0, loop_vectu_maxReduction_stride	# loop back for any more 
