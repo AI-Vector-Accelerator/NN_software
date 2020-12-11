@@ -49,12 +49,13 @@ vect_add_32bits:
 # Non-vector instructions are indented
 vect_addElementWise:    
 	.globl   vect_addElementWise
+	li t5, 1
 	vsetvli t0, a0, e8, m1, d1 			# Set vector length based on 8-bit vectors
 	vle.v v1, (a1)          			# Get first vector
 	  add a1, a1, t0         			# Bump pointer
-	vwadd.vx v2, v1, x0     			    
+	vwmul.vx v2, v1, x0     			    
 	vsetvli t0, a0, e16, m2, d1 		# Set vector length based on 16-bit vectors
-	vwadd.vx v4, v2, x0     			   
+	vwmul.vx v4, v2, t5     			   
 	vsetvli t0, a0, e32, m4, d1 		# Set vector length based on 32-bit vectors  
 	vadd.vx v4, v4, a3     				# Sum    
 	vmul.vx v4, v4, a4     				# multiply  
@@ -280,14 +281,15 @@ vect_dotProduct_offset:
     .globl   vect_dotProduct_offset
 	vsetvli t0, a0, e32, m1, d1      	# Set scalarOutput vector to be of 32 bits
 	vmv.v.i v1, 0						# set result vector to 0
+	li t5, 1
 loop_vect_dotProduct_offset:
 	vsetvli t0, a0, e8, m2, d1      	# Set vectors to be of 8 bits, group 2 VecReg together for efficiency 
 	vle.v v4, (a1)          			# Get first vector
 	  add a1, a1, t0        			# Bump pointer
 	vle.v v8, (a2)          			# Get second vector
       add a2, a2, t0        			# Bump pointer
-	vwadd.vx v16, v4, x0				# widen vectors
-	vwadd.vx v20, v8, x0				# widen vectors
+	vwmul.vx v16, v4, t5				# widen vectors
+	vwmul.vx v20, v8, t5				# widen vectors
 	vsetvli t0, a0, e16, m4    			# output now in 4 vector registers, update to 16-bit elements
 	vadd.vx v16, v16, a4				# add offset to vectors
 	vadd.vx v20, v20, a5				# add offset to vectors
@@ -336,6 +338,7 @@ vect_dotProduct_offset_stride:
     .globl   vect_dotProduct_offset_stride
 	vsetvli t0, a0, e32, m1, d1      	# Set scalarOutput vector to be of 32 bits
 	vmv.v.i v1, 0						# set result vector to 0
+	li t5, 1
 loop_vect_dotProduct_offset_stride:
 	vsetvli t0, a0, e8, m2, d1      	# Set vectors to be of 8 bits, group 2 VecReg together for efficiency 
 	vlse.v v4, (a1), a6           		# Get first vector, strided load
@@ -344,8 +347,8 @@ loop_vect_dotProduct_offset_stride:
 	vlse.v v8, (a2), a7          		# Get second vector, strided load
 	  mul t3, t0, a7					# multiply bump amount by stride 
 	  add a2, a2, t3        			# Bump pointer
-	vwadd.vx v16, v4, x0				# widen vectors
-	vwadd.vx v20, v8, x0				# widen vectors
+	vwmul.vx v16, v4, t5				# widen vectors
+	vwmul.vx v20, v8, t5				# widen vectors
 	vsetvli t0, a0, e16, m4    			# output now in 4 vector registers, update to 16-bit elements
 	vadd.vx v16, v16, a4				# add offset to vectors
 	vadd.vx v20, v20, a5				# add offset to vectors
@@ -483,19 +486,7 @@ vect_ReLu6_Bound_32bits:
 
 
 
-vect_ReLu6_Bound_unsigned: 
-	.globl   vect_ReLu6_Bound_unsigned
-	vsetvli t0, a0, e8, m4, d1      	# Set vectors to be of 8 bits, group 4 VecReg together for efficiency 
-	vle.v v4, (a1) 						# Get first vector 
-      add a1, a1, t0 					# Bump pointer 
-	vmaxu.vx v4, v4, a3 					# max vectors 
-	vminu.vx v4, v4, a4 					# min vectors 
-	vse.v v4, (a2) 						# Store result 
-      add a2, a2, t0 					# Bump pointer 
-	  sub a0, a0, t0 					# Decrement number done
-      bnez a0, vect_ReLu6_Bound			# Loop back 
-      ret 								# Finished
- 
+
  
  
  
