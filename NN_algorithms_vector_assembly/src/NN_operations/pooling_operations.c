@@ -26,20 +26,18 @@ void max_pool_d8 (	const uint32_t	Src_nRows,
 					int8_t			Dst[Src_nRows/Src_filter_nRows]  \
 										[Src_nColumns/Src_filter_nColumns]	){
 
-	uint32_t position_i,position_j,vecLength=Src_nColumns/Src_filter_nColumns;
-	
-	for (uint32_t i = 0; i < Src_nRows/Src_filter_nRows; i++){
-		for (uint32_t j = 0; j < vecLength; j++){
-			Dst[i][j] = MIN_INT8_T;
-		}
-	}
-	for (uint32_t i = 0; i < Src_nRows/Src_filter_nRows; i++){
-		for (uint32_t k = 0; k < Src_filter_nRows; k++){
-			position_i = i*Src_Stride + k;
-			for (uint32_t l = 0; l < Src_filter_nColumns; l++){
-				position_j = l;
-				vect_max_stride_vec2(vecLength, Dst[i],&Src[position_i][position_j], Dst[i],Src_filter_nColumns);
+	uint32_t position_i,position_j,vecLength=Src_filter_nColumns;
+	int8_t max=MIN_INT8_T;
+
+	for (uint32_t i = 0; i < (int)Src_nRows/Src_filter_nRows; i++){
+		for (uint32_t j = 0; j < (int)Src_nColumns/Src_filter_nColumns; j++){
+			max=MIN_INT8_T;
+			for (uint32_t k = 0; k < Src_filter_nRows; k++){
+				position_i = i*Src_Stride + k;
+				position_j = j*Src_Stride;
+				vect_maxReduction_stride(vecLength, &Src[position_i][position_j], &max, max, 1);
 			}
+			Dst[i][j] = max;
 		}
 	}
 }
@@ -69,21 +67,18 @@ void avg_pool_d8 (	const uint32_t	Src_nRows,
 					int8_t			Dst[Src_nRows/Src_filter_nRows]  \
 										[Src_nColumns/Src_filter_nColumns]	){
 
-	uint32_t position_i,position_j;
-	uint32_t tempVecLength=Src_nColumns/Src_filter_nColumns;
-	int16_t tempVec[tempVecLength];
-		
-	for (uint32_t i = 0; i < Src_nRows/Src_filter_nRows; i++){
-		for (uint32_t j = 0; j < tempVecLength; j++){tempVec[j]=0;}
-		for (uint32_t k = 0; k < Src_filter_nRows; k++){
-			position_i = i*Src_Stride + k;
-			for (uint32_t l = 0; l < Src_filter_nColumns; l++){
-				position_j = l;
-				vect_add_stride_vec2(tempVecLength, tempVec,&Src[position_i][position_j], tempVec,Src_filter_nColumns);
+	uint32_t position_i,position_j,vecLength=Src_filter_nColumns,filterElements=Src_filter_nRows*Src_filter_nColumns;
+	int16_t sum;
+
+	for (uint32_t i = 0; i < (int)Src_nRows/Src_filter_nRows; i++){
+		for (uint32_t j = 0; j < (int)Src_nColumns/Src_filter_nColumns; j++){
+			sum=0;
+			for (uint32_t k = 0; k < Src_filter_nRows; k++){
+				position_i = i*Src_Stride + k;
+				position_j = j*Src_Stride;
+				vect_addReduction_stride(vecLength, &Src[position_i][position_j], &sum, sum, 1);
 			}
-		}
-		for (uint32_t j = 0; j < tempVecLength; j++){
-			Dst[i][j] = saturate_16bit_to_8bit(tempVec[j]/(int16_t)(Src_filter_nRows*Src_filter_nColumns));
+			Dst[i][j] = saturate_16bit_to_8bit( sum/(int16_t)filterElements );	//average is sum/(number of elements in filter)
 		}
 	}
 }

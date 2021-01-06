@@ -120,7 +120,8 @@ vect_addReduction_stride:
 loop_vect_addReduction_stride:
 	vsetvli t0, a0, e8, m4, d1      	# Set vectors to be of 8 bits, group 4 VecReg together for efficiency 
 	vlse.v v4, (a1), a4        			# Get first vector
-	  add a1, a1, t0        			# Bump pointer
+	  mul t2, t0, a4					# multiply bump amount by stride 
+	  add a1, a1, t2        			# Bump pointer
 	  sub a0, a0, t0        			# Decrement number of bytes done
 	vwredsum.vs v1, v4, v1  			# reduction sum vector
 	  bnez a0, loop_vect_addReduction_stride	# loop back for any more 
@@ -140,7 +141,8 @@ vectu_addReduction_stride:
 loop_vectu_addReduction_stride:
 	vsetvli t0, a0, e8, m4, d1      	# Set vectors to be of 8 bits, group 4 VecReg together for efficiency 
 	vlse.v v4, (a1), a4        			# Get first vector
-	  add a1, a1, t0        			# Bump pointer
+ 	  mul t2, t0, a4					# multiply bump amount by stride 
+	  add a1, a1, t2        			# Bump pointer
 	  sub a0, a0, t0        			# Decrement number of bytes done
 	vwredsumu.vs v1, v4, v1  			# reduction sum vector
 	  bnez a0, loop_vectu_addReduction_stride	# loop back for any more 
@@ -149,31 +151,6 @@ loop_vectu_addReduction_stride:
 	  sh	t1, 0(a2)					# finished loop, store answer
 	  ret								# return
 
-
-
-# vect_add_stride_vec2(unsigned int N, const int16_t *vec1,const int8_t *vec2, int16_t *vecOut, uint32_t stride);
-# a0 = N, a1 = *vec1, a2 = *vec2, a3 = *vecOut ,a4=stride
-# v4=vec1, v8=vec2, v12=vec3
-# Non-vector instructions are indented
-vect_add_stride_vec2:	
-	.globl	vect_add_stride_vec2
-loop_vect_add_stride_vec2:
-	vsetvli t0, a0, e16, m4, d1      	# Set vectors to be of 16 bits, group 4 VecReg together for efficiency 
-	vle.v v4, (a1)          			# Get first vector
-	  slli t2, t0, 1 
-	  add a1, a1, t2        			# Bump pointer
-	vsetvli t0, a0, e8, m2, d1      	# Set vectors to be of 8 bits  
-	vlse.v v8, (a2), a4					# Get second vector, strided load
-	  mul t3, t0, a4					# multiply bump amount by stride 
-	  add a2, a2, t3 					# Bump pointer
-	vwadd.wv v12, v4, v8  				# add vector
-	vsetvli t0, a0, e16, m4, d1      	# Set vectors to be of 16 bits, group 4 VecReg together for efficiency 
-	vse.v v12, (a3) 					# Store result
-	  add a3, a3, t2 					# Bump pointer
-	  sub a0, a0, t0        			# Decrement number of bytes done
-	  bnez a0, loop_vect_add_stride_vec2		# loop back for any more 
-	  ret								# return
- 
 
 
 # vect_maxReduction(unsigned int N, const int8_t *vec1, int8_t *scalarOut)
@@ -206,7 +183,8 @@ vect_maxReduction_stride:
 loop_vect_maxReduction_stride:
 	vsetvli t0, a0, e8, m4, d1      	# Set vectors to be of 8 bits, group 4 VecReg together for efficiency 
 	vlse.v v4, (a1), a4        			# Get first vector
-	  add a1, a1, t0        			# Bump pointer
+      mul t2, t0, a4					# multiply bump amount by stride 
+	  add a1, a1, t2        			# Bump pointer
 	  sub a0, a0, t0        			# Decrement number of bytes done
 	vredmax.vs v1, v4, v1  				# max vector
 	  bnez a0, loop_vect_maxReduction_stride	# loop back for any more 
@@ -227,7 +205,8 @@ vectu_maxReduction_stride:
 loop_vectu_maxReduction_stride:
 	vsetvli t0, a0, e8, m4, d1      	# Set vectors to be of 8 bits, group 4 VecReg together for efficiency 
 	vlse.v v4, (a1), a4        			# Get first vector
-	  add a1, a1, t0        			# Bump pointer
+      mul t2, t0, a4					# multiply bump amount by stride 
+	  add a1, a1, t2        			# Bump pointer
 	  sub a0, a0, t0        			# Decrement number of bytes done
 	vredmaxu.vs v1, v4, v1  				# max vector
 	  bnez a0, loop_vectu_maxReduction_stride	# loop back for any more 
@@ -236,29 +215,6 @@ loop_vectu_maxReduction_stride:
 	  sb	t1, 0(a2)					# finished loop, store answer
 	  ret								# return
 
-
-# vect_max_stride_vec2(unsigned int N, const int8_t *vec1,const int8_t *vec2, int8_t *vecOut, uint32_t stride);
-# a0 = N, a1 = *vec1, a2 = *vec2, a3 = *vecOut ,a4=stride
-# v4=vec1, v8=vec2, v12=vec3
-# Non-vector instructions are indented
-vect_max_stride_vec2:	
-	.globl	vect_max_stride_vec2
-	vsetvli t0, a0, e8, m1, d1      	# Set vectors to be of 8 bits
-	li t1, MIN_INT8_T					# copy min value into register
-	vmv.v.x v8, t1						# copy register into temp vec
-loop_vect_max_stride_vec2:
-	vsetvli t0, a0, e8, m4, d1      	# Set vectors to be of 8 bits, group 4 VecReg together for efficiency 
-	vle.v v4, (a1)          			# Get first vector
-	  add a1, a1, t0        			# Bump pointer
-	vlse.v v8, (a2), a4					# Get second vector, strided load
-	  mul t2, t0, a4					# multiply bump amount by stride 
-	  add a2, a2, t2 					# Bump pointer
-	  sub a0, a0, t0        			# Decrement number of bytes done
-	vmax.vv v12, v4, v8  				# max vector
-	vse.v v12, (a3) 					# Store result
-	  add a3, a3, t0 					# Bump pointer
-	  bnez a0, loop_vect_max_stride_vec2		# loop back for any more 
-	  ret								# return
 	  
 	  
  

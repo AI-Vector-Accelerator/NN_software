@@ -20,13 +20,11 @@ extern void vect_mult(unsigned int N, const int8_t *vec1, const int8_t *vec2, in
 extern void vect_addReduction(unsigned int N, const int8_t *vec1, int16_t *scalarOut);
 extern void vect_addReduction_stride(unsigned int N, const int8_t *vec1, int16_t *scalarOut, const int16_t scalarIn, uint32_t stride);
 extern void vectu_addReduction_stride(unsigned int N, const uint8_t *vec1, uint16_t *scalarOut, const uint16_t scalarIn, uint32_t stride);
-extern void vect_add_stride_vec2(unsigned int N, const int16_t *vec1,const int8_t *vec2, int16_t *vecOut, uint32_t stride);
 
 
 extern void vect_maxReduction(unsigned int N, const int8_t *vec1, int8_t *scalarOut);
 extern void vect_maxReduction_stride(unsigned int N, const int8_t *vec1, int8_t *scalarOut, const int8_t scalarIn, uint32_t stride);
 extern void vectu_maxReduction_stride(unsigned int N, const uint8_t *vec1, uint8_t *scalarOut, const uint8_t scalarIn, uint32_t stride);
-extern void vect_max_stride_vec2(unsigned int N, const int8_t *vec1,const int8_t *vec2, int8_t *vecOut, uint32_t stride);
 
 
 extern void vect_dotProduct(unsigned int N, const int8_t *vec1, const int8_t *vec2, int32_t *scalarOut);
