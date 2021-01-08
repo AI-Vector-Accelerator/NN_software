@@ -66,8 +66,8 @@ all:
 	make dir
 	make lib
 	make -j16
-	make verilator
-	make spike -j16
+	make -j16 verilator
+	make -j16 spike
 	make analyze_assembly
 	
 .PHONY : clean
