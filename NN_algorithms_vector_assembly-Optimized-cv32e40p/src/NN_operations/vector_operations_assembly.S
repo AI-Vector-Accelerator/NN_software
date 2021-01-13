@@ -117,7 +117,7 @@ loop_vect_addReduction:
 vect_addReduction_stride:	
 	.globl   vect_addReduction_stride
 	vsetvli t0, a0, e16, m1, d1      	# Set vectors to be of 16 bits
-	vmv.s.x v1, a3						# set temp vector to 0
+	vmv.v.x v1, a3						# set temp vector to 0
 loop_vect_addReduction_stride:
 	vsetvli t0, a0, e8, m4, d1      	# Set vectors to be of 8 bits, group 4 VecReg together for efficiency 
 	vlse.v v4, (a1), a4        			# Get first vector
@@ -138,7 +138,7 @@ loop_vect_addReduction_stride:
 vectu_addReduction_stride:	
 	.globl   vectu_addReduction_stride
 	vsetvli t0, a0, e16, m1, d1      	# Set vectors to be of 16 bits
-	vmv.s.x v1, a3						# set temp vector to 0
+	vmv.v.x v1, a3						# set temp vector to 0
 loop_vectu_addReduction_stride:
 	vsetvli t0, a0, e8, m4, d1      	# Set vectors to be of 8 bits, group 4 VecReg together for efficiency 
 	vlse.v v4, (a1), a4        			# Get first vector
@@ -183,7 +183,7 @@ loop_vect_maxReduction:
 vect_maxReduction_stride:	
 	.globl   vect_maxReduction_stride
 	vsetvli t0, a0, e8, m1, d1      	# Set vectors to be of 8 bits
-	vmv.s.x v1, a3						# set temp vector to 0
+	vmv.v.x v1, a3						# set temp vector to 0
 loop_vect_maxReduction_stride:
 	vsetvli t0, a0, e8, m4, d1      	# Set vectors to be of 8 bits, group 4 VecReg together for efficiency 
 	vlse.v v4, (a1), a4        			# Get first vector
@@ -205,7 +205,7 @@ loop_vect_maxReduction_stride:
 vectu_maxReduction_stride:	
 	.globl   vectu_maxReduction_stride
 	vsetvli t0, a0, e8, m1, d1      	# Set vectors to be of 8 bits
-	vmv.s.x v1, a3						# set temp vector to 0
+	vmv.v.x v1, a3						# set temp vector to 0
 loop_vectu_maxReduction_stride:
 	vsetvli t0, a0, e8, m4, d1      	# Set vectors to be of 8 bits, group 4 VecReg together for efficiency 
 	vlse.v v4, (a1), a4        			# Get first vector
